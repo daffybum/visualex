@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}History Log{% endblock %}
+
+{% block content %}
+<style>
+.thumbnail {
+    max-width: 100px; /* Adjust the maximum width as needed */
+    max-height: 100px; /* Adjust the maximum height as needed */
+}
+</style>
+<div class="container" style="background-color: white; padding: 20px;">
+    <h1>History Log</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Image ID</th>
+                <th>Image</th>
+                <th>Predicted Label</th>
+                <th>Laplacian Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if history_logs %}
+            {% for history_log, prediction_info in history_logs %}
+            <tr>
+                <td>{{ history_log.h_date.strftime('%B %d, %Y') }}</td>
+                <td>{{ prediction_info.image_id }}</td>
+                <td><img class="thumbnail" src="data:image/jpeg;base64,{{ prediction_info.image_data }}" alt="Image"></td>
+                <td>{{ prediction_info.predicted_label }}</td>
+                <td>{{ prediction_info.laplacian_score }}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="5">No history logs found.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
