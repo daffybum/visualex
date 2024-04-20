@@ -11,3 +11,4 @@ stripe==8.7.0
 torch==2.2.2
 transformers==4.39.3
 Werkzeug==3.0.2
+gunicorn==22.0.0
