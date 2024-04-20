@@ -6,7 +6,6 @@ import pytz
 import pyttsx3
 import base64
 from PIL import Image
-import tensorflow as tf
 from tensorflow import keras
 import io
 import numpy as np
