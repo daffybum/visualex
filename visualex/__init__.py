@@ -7,7 +7,7 @@ mysql = MySQL()
 
 def create_app():
     app=Flask(__name__)
-    #app.config['SECRET_KEY'] = 'HelloWorld'
+    app.config['SECRET_KEY'] = 'HelloWorld'
     app.config['MYSQL_HOST'] = 'mysql-srts'
     app.config['MYSQL_USER'] = 'mysql'
     app.config['MYSQL_PASSWORD'] = 'password123'
