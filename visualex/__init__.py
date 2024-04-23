@@ -9,7 +9,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'HelloWorld'
     app.config['MYSQL_HOST'] = 'mysql-srts'
     app.config['MYSQL_USER'] = "mysql"
-    app.config['MYSQL_PASSWORD'] = "password123'
+    app.config['MYSQL_PASSWORD'] = "password123"
     app.config['MYSQL_DB'] = "db"
 
     app.config['UPLOAD_FOLDER'] = 'visualex/static/uploads/'
