@@ -243,6 +243,7 @@ def upload_image():
             image_path = os.path.join(UPLOAD_FOLDER, filename)
             image_id = image_controller.store_img(image_path)
             session['laplacian_score'] = score # store the laplacian score in the session
+            session['filename'] = filename
             flash(formatted_string)
             print('upload_image filename: ' + filename)
             flash('Image successfully uploaded')
@@ -337,17 +338,6 @@ def delete_account():
                 return redirect(url_for('boundary.accountDetail'))
         return redirect(url_for('boundary.accounDetail'))
 
-
-
-@boundary.route('/catOrDog', methods=['POST'])
-def predictCatOrDog():
-    username = session.get('username')
-    image_id = request.form.get('image_id')
-    prediction_controller = controller.CatOrDogController()
-    prediction_result = prediction_controller.cat_or_dog(image_id)
-    # Do something with the image_id, such as storing it in a database
-    return render_template('uploadImage.html', user_name=username, image_id=image_id, prediction_result=prediction_result)
-
 @boundary.route('/generateaudio', methods=['GET', 'POST'])
 def generate_audio():
     if request.method == 'POST':
@@ -384,12 +374,14 @@ def generateText():
     username = session.get('username')
     image_id = request.form.get('image_id')
     laplacian_score = session.get('laplacian_score')
+    filename = session.get('filename')
+    print(filename)
     prediction_controller = controller.GenerateTextController()
     prediction_result = prediction_controller.generate_text(image_id)
     storePredictedResultsController = controller.storePredictedResultsController() # store entry in prediction_results table
     storePredictedResultsController.store_PredictedResults(username, image_id,prediction_result,laplacian_score)
     # Do something with the image_id, such as storing it in a database
-    return render_template('uploadImage.html', user_name=username, image_id=image_id, prediction_result=prediction_result)
+    return render_template('uploadImage.html', user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
 
 @boundary.route('/editProfile', methods=['GET', 'POST'])
 def editProfile():
@@ -466,3 +458,11 @@ def viewUserLogs():
     history_logs_controller = controller.ViewHistoryController()
     history_logs = history_logs_controller.viewHistory(selected_user)
     return render_template('history.html', history_logs=history_logs, user_name=username)
+
+@boundary.route('/autoSelectImages', methods=['POST'])
+def auto_select_objects():
+    username = session.get('username')
+    image_id = request.form.get('image_id')
+    autoSelectController = controller.AutoSelectObjectsController()
+    cropped_images = autoSelectController .auto_select_objects(image_id)
+    return render_template('generateStory.html', cropped_images=cropped_images, user_name=username)
