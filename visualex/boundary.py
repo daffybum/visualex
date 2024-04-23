@@ -221,7 +221,7 @@ def upload_image():
         filename = secure_filename(file.filename)
         file.save(os.path.join(UPLOAD_FOLDER, filename))
         static_folder = os.path.abspath('visualex')
-        relative_filepath = r"static/uploads/" + filename
+        relative_filepath = r"static\uploads\\" + filename
         image_path = os.path.join(static_folder, relative_filepath)
         image = image_path
         image = cv2.imread(str(image))
