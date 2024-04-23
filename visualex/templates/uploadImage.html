@@ -48,14 +48,15 @@
                     <button type="submit" class="btn btn-info">Generate Text</button>
                 </p>
             </form>
-
-            <form method="post" action="/catOrDog">
+        
+            <!-- Button to select images -->
+            <form method="post" action="/autoSelectImages">
                 <input type="hidden" name="image_id" value="{{ image_id }}">
                 <p>
-                    <button type="submit" class="btn btn-info">Guessing Animals (Cats or Dogs)</button>
+                    <button type="submit" class="btn btn-info">Select</button>
                 </p>
             </form>
-            
+
             <!-- Button to generate audio -->
             <form action="/generateaudio" method="POST">
                 <input type="hidden" name="text" value="{{ prediction_result }}">

@@ -450,51 +450,6 @@ class ImageData:
             return image_id
         except Exception as e:
             print(f"Failed to insert image data: {e}")
-            
-    def catOrDog(self, image_id):
-        try:
-            # Establish a connection to MySQL
-            cur = mysql.connection.cursor()
-            
-            # Debug: Print image_id for troubleshooting
-            print(f"Fetching image data for image_id: {image_id}")
-
-            # Retrieve image data from the database
-            cur.execute("SELECT image_data FROM image_metadata WHERE image_id = %s", (image_id,))
-            row = cur.fetchone()
-            if row is None or not row[0]:  # Check if row is None or image_data is empty
-                return "Image data not found or empty in the database"
-
-            image_data = row[0]
-            
-            # Load image from binary data
-            img = Image.open(io.BytesIO(image_data))
-
-            # Load the pre-trained model
-            loaded_model = keras.models.load_model("visualex/model1.h5")
-
-            # Load image from binary data
-            img = img.resize((64, 64))
-            img = np.array(img)  
-            img = np.expand_dims(img, axis=0)
-
-            # Make prediction
-            result = loaded_model.predict(img)
-
-            # Decode prediction
-            if result[0][0] == 1:
-                prediction = 'dog'
-            else:
-                prediction = 'cat'
-
-            # Close cursor
-            cur.close()
-
-            return prediction
-        except Exception as e:
-            # Debug: Print error message for troubleshooting
-            print(f"Failed to fetch image data from the database: {e}")
-            return "Error occurred while fetching image data"
         
     #for object detection   
     def objectDetection(self, image_id):
@@ -641,6 +596,73 @@ class ImageData:
         text2 = ' '.join(text2) if isinstance(text2, list) else text2
         text = text1 + " This image shows, " + text2 + "."
         return text
+    
+    def autoSelectObjects(self, image_id):
+        labels = open('visualex/coco.names').read().strip().split('\n')
+        weights_path = 'visualex/yolov3.weights'
+        configuration_path = 'visualex/yolov3.cfg'
+        probability_minimum = 0.5
+        threshold = 0.3
+        
+        network = cv2.dnn.readNetFromDarknet(configuration_path, weights_path)
+        layers_names_all = network.getLayerNames()
+        output_layer_indices = network.getUnconnectedOutLayers()
+        layers_names_output = [layers_names_all[i - 1] for i in output_layer_indices]
+        
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT image_data FROM image_metadata WHERE image_id = %s", (image_id,))
+        row = cur.fetchone()
+        if row is None or not row[0]:
+            return "Image data not found or empty in the database"
+        
+        image_data = row[0]
+        nparr = np.frombuffer(image_data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        image_input_shape = img.shape
+        blob = cv2.dnn.blobFromImage(img, 1 / 255.0, (416, 416), swapRB=True, crop=False)
+        network.setInput(blob)
+        output_from_network = network.forward(layers_names_output)
+        
+        np.random.seed(42)
+        colours = np.random.randint(0, 255, size=(len(labels), 3), dtype='uint8')
+        
+        bounding_boxes = []
+        confidences = []
+        class_numbers = []
+        h, w = image_input_shape[:2]
+        
+        for result in output_from_network:
+            for detection in result:
+                scores = detection[5:]
+                class_current = np.argmax(scores)
+                confidence_current = scores[class_current]
+                if confidence_current > probability_minimum:
+                    box_current = detection[0:4] * np.array([w, h, w, h])
+                    x_center, y_center, box_width, box_height = box_current.astype('int')
+                    x_min = int(x_center - (box_width / 2))
+                    y_min = int(y_center - (box_height / 2))
+
+                    bounding_boxes.append([x_min, y_min, int(box_width), int(box_height)])
+                    confidences.append(float(confidence_current))
+                    class_numbers.append(class_current)
+        
+        results = cv2.dnn.NMSBoxes(bounding_boxes, confidences, probability_minimum, threshold)
+        object_counts = defaultdict(int)
+        cropped_images = []
+        for line in results:
+            if len(cropped_images) >= 6:
+                break
+            label = labels[int(class_numbers[line])]  # Fix the index error here
+            object_counts[label] += 1
+            x_min, y_min, box_width, box_height = bounding_boxes[line]  # Fix the index error here
+            cropped_img = img[y_min:y_min+box_height, x_min:x_min+box_width]
+            # Encode the cropped image to base64
+            _, buffer = cv2.imencode('.png', cropped_img)
+            cropped_img_base64 = base64.b64encode(buffer).decode()
+            cropped_images.append((cropped_img_base64, label))
+
+
+        return cropped_images
 
 class PredictionResults:
     def __init__(self, result_id=None, model_id=None, image_id=None, predicted_label=None, confidence_score=None, timestamp=None):

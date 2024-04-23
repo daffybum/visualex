@@ -113,13 +113,6 @@ class StoreImagesController:
     def store_img(self, image_path):
         return self.storeImage.store_image(image_path)
     
-class CatOrDogController:
-    def __init__(self):
-        self.cod = entity.ImageData()
-    
-    def cat_or_dog(self, image_id):
-        return self.cod.catOrDog(image_id)
-
 class TextToAudioController:
     def __init__(self):
         self.predictionresults = entity.PredictionResults()
@@ -148,3 +141,10 @@ class storePredictedResultsController:
 
     def store_PredictedResults(self, username, image_id, predicted_label, laplacian_score):
         return self.historylogs.store_predictedResults(username, image_id, predicted_label, laplacian_score)
+    
+class AutoSelectObjectsController:
+    def __init__(self):
+        self.objectImages = entity.ImageData()
+        
+    def auto_select_objects(self, image_id):
+        return self.objectImages.autoSelectObjects(image_id)
