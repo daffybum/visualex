@@ -1,7 +1,5 @@
 gunicorn==22.0.0
 gevent==24.2.1
-espeak==1.48.04
-libespeak1==1.48.04
 Flask==3.0.3
 Flask_MySQLdb==2.0.0
 matplotlib==3.8.2
