@@ -73,7 +73,7 @@ class AssignMembershipController:
         self.userAccount = entity.UserAccount()
 
     def assign_membership(self, username, membership_tier):
-        return self.userAccount.assign_membership(username, membership_tier)
+        return self.userAccount.assignMembership(username, membership_tier)
 
 class DisplayController:
     def __init__(self):
