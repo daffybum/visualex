@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}User Feedback{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1 class="float-start feedback-heading">Feedback Forum</h1>
+    </div>
+    <div class="col">
+      <a href="{{ url_for('boundary.submit_feedback') }}" class="btn btn-primary">Add Feedback</a>
+    </div>
+  </div>
+
+  <!-- Feedback Section -->
+  <div class="feedback-section" style="height: 600px; overflow-y: auto;">
+    <ol class="list-group list-group-numbered">
+      {% for feedback in feedback_list|reverse %}
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div>
+            <div class="fw-bold" style="display: inline;">ID:</div>
+            <div style="display: inline;">{{ feedback.feedback_id }}</div>
+          </div>
+          <div>
+            <div class="fw-bold" style="display: inline;">Date:</div>
+            <div style="display: inline;">{{ feedback.feedback_date.strftime('%Y-%m-%d') }}</div>
+          </div>
+          <div>
+            <div class="fw-bold" style="display: inline;">Username:</div>
+            <div style="display: inline;">{{ feedback.username }}</div>
+          </div>
+          <div>
+            <div class="fw-bold" style="display: inline;">Feedback:</div>
+            <div style="display: inline;">{{ feedback.content }}</div>
+          </div>
+        </div>
+        <!-- Move time_difference to the far right side -->
+        <div class="ms-auto">
+          <div style="display: inline;">{{ feedback.time_difference(feedback.feedback_date) }}</div>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</div>
+{% endblock %}

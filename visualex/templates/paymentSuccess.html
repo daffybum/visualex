@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Submit Feedback{% endblock %}
+
+{% block content %}
+
+<style>
+    .container1 {
+    width: 65%; 
+    margin-top: 50px;
+    margin-left: 200px; 
+    background-color: #ffffff; 
+    padding: 25px;
+    border-radius: 15px;
+    }
+    th {
+        font-size: 20px;
+        padding: 8px; /* Add padding for better spacing */
+    }
+    td {
+        padding: 8px; /* Add padding for better spacing */
+    }
+
+    td.special-cell {
+    border-bottom: 1px solid #ccc; /* Add a solid bottom border to all table cells */
+    }
+    
+</style>
+
+<div class="container1">
+    <h1> Payment Successful</h1>
+    <p>Thank You for your purchase!</p>
+    <p>To return to home Click<a href="/home"> here</a></p>
+    <hr>
+    <table>
+        <tr>
+            <th>Invoice</th>
+        </tr>
+        <tr>
+            <td>Transaction ID: {{display[0]}}</td>
+        </tr>
+        <tr>
+            <td>x1 {{tier}} Membership Subscription</td>
+        </tr>
+        <tr>
+            <td class="special-cell">Date and Time of Payment: {{display[2]}}</td>
+        </tr>
+        <tr>
+            <td>Total: ${{display[3]}}</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %}

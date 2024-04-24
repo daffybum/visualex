@@ -1,0 +1,66 @@
+<!-- membersubscription.html -->
+{% extends "base.html" %}
+
+{% block title %}Membership Subscription{% endblock %}
+
+{% block content %}
+<style>
+    .container1 {
+    width: 65%; 
+    margin-top: 100px;
+    margin-left: 380px;  
+    background-color: #ffffff; 
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    }
+</style>
+<div class="container1">
+
+    <h1>Membership Subscription</h1>
+    <form action="/create-payment-session" method="post">
+        <table>
+            <thead>
+                <tr>
+                    <th>Features</th>
+                    <th>Basic Tier (Cost: Free)</th>
+                    <th>Premium Tier (Cost: $20.00/month)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Generate Descriptive Text</td>
+                    <td><input type="checkbox" name="free_features[]" value="Generate Descriptive Text" checked disabled></td>
+                    <td><input type="checkbox" name="premium_features[]" value="Generate Descriptive Text" checked disabled></td>
+                </tr>
+                <tr>
+                    <td>Play Audio of Text</td>
+                    <td><input type="checkbox" name="free_features[]" value="Play Audio of Text" checked disabled></td>
+                    <td><input type="checkbox" name="premium_features[]" value="Play Audio of Text" checked disabled></td>
+                </tr>
+                <tr>
+                    <td>Selective Analysis Feature</td>
+                    <td></td>
+                    <td><input type="checkbox" name="premium_features[]" value="Selective Analysis Feature" checked disabled></td>
+                </tr>
+                <tr>
+                    <td>Generate Story Text</td>
+                    <td></td>
+                    <td><input type="checkbox" name="premium_features[]" value="Generate Story Text" checked disabled></td>
+                </tr>
+                <tr>
+                    <th>Cost</th>
+                    <th>Free</th>
+                    <th>$20.00/month</th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td><input type="submit" name="premium-membership" value="Subscribe to Premium Tier"></td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+    </form>
+</div>
+{% endblock %}
