@@ -1,3 +1,6 @@
+gunicorn==22.0.0
+gevent==24.2.1
+
 absl-py==2.1.0
 annotated-types==0.6.0
 anyio==4.3.0
@@ -41,15 +44,17 @@ Markdown==3.6
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mathparse==0.1.2
-matplotlib==3.8.4
+matplotlib==3.8.2
 mdurl==0.1.2
 ml-dtypes==0.3.2
 mpmath==1.3.0
 mysqlclient==2.2.4
+mysql_connector_repackaged==0.3.1
+
 namex==0.0.8
 networkx==3.3
 nltk==3.8.1
-numpy==1.26.4
+numpy==1.24.1
 openai==1.21.2
 opencv-python==4.9.0.80
 opt-einsum==3.3.0
