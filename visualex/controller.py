@@ -83,6 +83,9 @@ class DisplayController:
         return self.userAccount.get_user_info(username)
     def get_user_info2(self, username):
         return self.userAccount.get_user_info2(username)
+    def get_user_info3(self, username):
+        return self.userAccount.get_user_info3(username)
+    
     
 class GetAllUsersController:
     def __init__(self):

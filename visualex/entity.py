@@ -162,6 +162,16 @@ class UserAccount:
         cur.close()
         return user_data
     
+    def get_user_info3(self, username):
+        cur = mysql.connection.cursor()
+        query = "SELECT username, name, surname, email, date_of_birth, address FROM useraccount WHERE username = %s"
+        cur.execute(query, (username,))
+        user_data = cur.fetchone()
+        mysql.connection.commit()
+        cur.close()
+        return user_data
+
+    
     def get_all_users(self):
         try:
             cur = mysql.connection.cursor()

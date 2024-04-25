@@ -379,6 +379,8 @@ def generateText():
     prediction_result = prediction_controller.generate_text(image_id)
     storePredictedResultsController = controller.storePredictedResultsController() # store entry in prediction_results table
     storePredictedResultsController.store_PredictedResults(username, image_id,prediction_result,laplacian_score)
+    storeHistoryController = controller.storeHistoryController() #store entry in history table
+    storeHistoryController.store_History(username, result_id)
     # Do something with the image_id, such as storing it in a database
     return render_template('uploadImage.html', user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
 
@@ -408,7 +410,7 @@ def editProfile():
                 flash('Cannot update profile')
         return render_template("editProfile.html", username=selected_user,name=name, surname=surname, email=email, address=address, user_name = username, membershipTier = membershipTier, dob=date_of_birth)
     else:
-        user = display.get_user_info(username)
+        user = display.get_user_info3(username)
         username,name, surname, email, date_of_birth, address= user
         if request.method == 'POST':
             email1 = request.form.get('email')
