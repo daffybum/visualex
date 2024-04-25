@@ -121,7 +121,7 @@ def handle_payment_success():
     membership = "premium"
     payment = makePaymentController.makePayment(username, charges)
     display = getInvoiceController.viewDisplay(payment)
-    assignMembershipController.assignMembership(username, membership)
+    assignMembershipController.assign_membership(username, membership)
     return render_template("paymentSuccess.html", user_name = username, display = display, tier = membership.capitalize())
 
 
@@ -303,8 +303,8 @@ def viewUserDetails():
     display= controller.DisplayController()
     user = display.get_user_info2(selected_user)
     if user:
-        selected_user,name, surname, email, address, membershipTier = user
-        return render_template("accountdetail.html", username=selected_user,name=name, surname=surname, email=email, address=address, user_name = username, membershipTier = membershipTier)
+        selected_user,name, surname, email,date_of_birth, address, membershipTier = user
+        return render_template("accountdetail.html", username=selected_user,name=name, surname=surname, email=email,dob=date_of_birth, address=address, user_name = username, membershipTier = membershipTier)
 
 
 # If admin clicks search
@@ -325,7 +325,19 @@ def viewSearchedUserDetails():
 @boundary.route('/deleteAccount', methods=['GET', 'POST'])
 def delete_account():
         username = session.get('username')
-        if username:
+        selected_user = session.get('selected_user')
+        if username == "admin":
+            userController = controller.DeleteController()
+            result = userController.delete_profile(selected_user)
+            if result :
+                # Account deleted successfully
+                # You might want to clear the session and provide a confirmation message
+                return redirect(url_for('boundary.login'))
+            else:
+                # Account deletion failed (username not found, database error, etc.)
+                flash('Failed to delete your account. Please try again later.', category='error')
+                return redirect(url_for('boundary.accountDetail'))
+        else:
             userController = controller.DeleteController()
             result = userController.delete_profile(username)
             if result :
@@ -335,7 +347,6 @@ def delete_account():
             else:
                 # Account deletion failed (username not found, database error, etc.)
                 flash('Failed to delete your account. Please try again later.', category='error')
-                return redirect(url_for('boundary.accountDetail'))
         return redirect(url_for('boundary.accounDetail'))
 
 @boundary.route('/generateaudio', methods=['GET', 'POST'])

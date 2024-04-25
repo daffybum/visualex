@@ -155,7 +155,7 @@ class UserAccount:
     def get_user_info2(self, username):  # to edit membership_tier for admin
         session['selected_user'] = username # store the username in the session
         cur = mysql.connection.cursor()
-        query = "SELECT username, name, surname, email, address, membership_tier FROM useraccount WHERE username = %s"
+        query = "SELECT username, name, surname, email, date_of_birth, address, membership_tier FROM useraccount WHERE username = %s"
         cur.execute(query, (username,))
         user_data = cur.fetchone()
         mysql.connection.commit()
@@ -238,7 +238,13 @@ class UserAccount:
         try:
             cur = mysql.connection.cursor()
             delete_query = "DELETE FROM useraccount WHERE username = %s"
+            delete_query1 = "DELETE FROM feedback WHERE username = %s"
+            delete_query2 = "DELETE FROM transaction WHERE username = %s"
+            delete_query3 = "DELETE FROM history WHERE username = %s"
             cur.execute(delete_query, (username,))
+            cur.execute(delete_query1, (username,))
+            cur.execute(delete_query2, (username,))
+            cur.execute(delete_query3, (username,))
             mysql.connection.commit()
             cur.close()
             return True
