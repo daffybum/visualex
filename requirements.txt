@@ -1,6 +1,7 @@
 gunicorn==22.0.0
 gevent==24.2.1
 Flask==3.0.3
+pyttsx3==2.90
 Flask_MySQLdb==2.0.0
 matplotlib==3.8.2
 mysql_connector_repackaged==0.3.1
