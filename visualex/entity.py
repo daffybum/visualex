@@ -155,7 +155,7 @@ class UserAccount:
     def get_user_info2(self, username):  # to edit membership_tier for admin
         session['selected_user'] = username # store the username in the session
         cur = mysql.connection.cursor()
-        query = "SELECT username, name, surname, email, address, membership_tier FROM useraccount WHERE username = %s"
+        query = "SELECT username, name, surname, email, date_of_birth, address, membership_tier FROM useraccount WHERE username = %s"
         cur.execute(query, (username,))
         user_data = cur.fetchone()
         mysql.connection.commit()

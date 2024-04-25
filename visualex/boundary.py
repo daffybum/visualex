@@ -303,8 +303,8 @@ def viewUserDetails():
     display= controller.DisplayController()
     user = display.get_user_info2(selected_user)
     if user:
-        selected_user,name, surname, email, address, membershipTier = user
-        return render_template("accountdetail.html", username=selected_user,name=name, surname=surname, email=email, address=address, user_name = username, membershipTier = membershipTier)
+        selected_user,name, surname, email,date_of_birth, address, membershipTier = user
+        return render_template("accountdetail.html", username=selected_user,name=name, surname=surname, email=email,dob=date_of_birth, address=address, user_name = username, membershipTier = membershipTier)
 
 
 # If admin clicks search
