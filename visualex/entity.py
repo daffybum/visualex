@@ -3,7 +3,6 @@ from . import mysql
 from werkzeug.security import check_password_hash
 from datetime import datetime
 import pytz
-import pyttsx3
 import base64
 from PIL import Image
 import io
@@ -14,6 +13,9 @@ import time
 from collections import defaultdict
 from transformers import VisionEncoderDecoderModel, ViTFeatureExtractor, AutoTokenizer
 import torch
+from io import BytesIO
+from gtts import gTTS
+import pygame
 
 class UserAccount:
     def __init__(self, username=None, password=None, name=None, surname=None, email=None, date_of_birth=None, address=None, membership_tier="basic"):
