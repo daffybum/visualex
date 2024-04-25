@@ -278,7 +278,7 @@ def display_profile():
         display= controller.DisplayController()
         user = display.get_user_info3(username)
         if user:
-            username,password,name, surname, date_of_birth,email, address = user
+            username,password,name, surname, date_of_birth,email, address, username = user
             return render_template("accountdetail.html", username=username,password=password,name=name, surname=surname,date_of_birth=date_of_birth, email=email, address=address,user_name = username)
         else:
             flash('User not found', category='error')
