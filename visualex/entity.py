@@ -691,6 +691,7 @@ class PredictionResults:
 
     def generate_audio_from_text(self, text, output_file):
         try:
+            engine = pyttsx3.init(driverName='sapi5')
             engine = pyttsx3.init()
             engine.setProperty('rate', 150)  # Speed of speech
             engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
