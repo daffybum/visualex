@@ -120,8 +120,8 @@ class TextToAudioController:
     def __init__(self):
         self.predictionresults = entity.PredictionResults()
 
-    def generate_audio_from_text(self, text):
-        return self.predictionresults.generate_audio_from_text(text)
+    def generate_audio_from_text(self, text, output_file):
+        return self.predictionresults.generate_audio_from_text(text, output_file)
 
 class GenerateTextController:
     def __init__(self):
