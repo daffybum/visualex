@@ -13,9 +13,7 @@ import time
 from collections import defaultdict
 from transformers import VisionEncoderDecoderModel, ViTFeatureExtractor, AutoTokenizer
 import torch
-from io import BytesIO
-from gtts import gTTS
-import pygame
+import pyttsx3
 
 class UserAccount:
     def __init__(self, username=None, password=None, name=None, surname=None, email=None, date_of_birth=None, address=None, membership_tier="basic"):
