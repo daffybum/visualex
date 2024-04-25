@@ -353,11 +353,12 @@ def delete_account():
 def generate_audio():
     if request.method == 'POST':
         text = request.form.get('text')
+        output_file = "static/output_audio.mp3"  # Change this to your desired output file name
         text_to_audio_controller = controller.TextToAudioController()
-        success = text_to_audio_controller.generate_audio_from_text(text)
+        success = text_to_audio_controller.generate_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
-    return render_template("uploadImage.html")
+    return render_template("uploadImage.html", text=text)
 
 @boundary.route('/assignmembership', methods=['GET', 'POST'])
 def assign_membership():
