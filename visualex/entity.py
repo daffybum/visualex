@@ -691,20 +691,16 @@ class PredictionResults:
         self.confidence_score = confidence_score
         self.timestamp = timestamp
 
-    def generate_audio_from_text(self, text):
+    def generate_audio_from_text(self, text, output_file):
         try:
-            pygame.mixer.init()
-            pygame.mixer.music.stop()
-            tts = gTTS(text=text, lang='en')
-            audio_bytes_io = BytesIO()
-            tts.write_to_fp(audio_bytes_io)
-            audio_bytes_io.seek(0)
-            pygame.mixer.music.load(audio_bytes_io)
-            pygame.mixer.music.set_volume(0.7)
-            pygame.mixer.music.play()
+            engine = pyttsx3.init()
+            engine.setProperty('rate', 150)  # Speed of speech
+            engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
+            engine.say(text)
+            engine.runAndWait()
         except Exception as e:
             print(f"Error generating audio: {e}")
-            return None
+            return False
 
 import cv2
 import numpy
