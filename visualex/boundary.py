@@ -390,8 +390,6 @@ def generateText():
     prediction_result = prediction_controller.generate_text(image_id)
     storePredictedResultsController = controller.storePredictedResultsController() # store entry in prediction_results table
     storePredictedResultsController.store_PredictedResults(username, image_id,prediction_result,laplacian_score)
-    storeHistoryController = controller.storeHistoryController() #store entry in history table
-    storeHistoryController.store_History(username, result_id)
     # Do something with the image_id, such as storing it in a database
     return render_template('uploadImage.html', user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
 
