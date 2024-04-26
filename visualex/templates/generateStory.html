@@ -61,7 +61,8 @@
             </div>
         {% endfor %}
     </div>
-    <form method="post" action="/generate_story">
+    <form id="generateStoryForm" method="post" action="/generate_story">
+        <input type="hidden" name="order" id="listOrderInput">
         <div class="generate-story">
             <button type="submit" class="generate-button" id="generateButton">Generate Story</button>
         </div>
@@ -81,36 +82,17 @@
                     $(".object-image").each(function() {
                         order.push($(this).attr('id'));
                     });
-                    // Send order to server or save it locally
-                    console.log(order);
+                    // Update the hidden input value
+                    $("#listOrderInput").val(order.join(","));
                 }   
             });
             $( "#sortable" ).disableSelection();
-
-            // AJAX to send order array to Flask backend
+    
+            // Submit the form when the button is clicked
             $("#generateButton").click(function() {
-                var order = [];
-                $(".object-image").each(function() {
-                    order.push($(this).attr('id'));
-                });
-
-                $.ajax({
-                    type: "POST",
-                    url: "/generate_story",
-                    data: JSON.stringify(order),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function(response) {
-                        // Handle success response if needed
-                        console.log(response);
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle error response if needed
-                        console.error(xhr.responseText);
-                    }
-                });
+                $("#generateStoryForm").submit();
             });
         });
-    </script>
+    </script>    
 </body>
 {% endblock %}

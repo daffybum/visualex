@@ -16,6 +16,7 @@ import torch
 from gtts import gTTS
 import os
 import random
+import openai
 
 class UserAccount:
     def __init__(self, username=None, password=None, name=None, surname=None, email=None, date_of_birth=None, address=None, membership_tier="basic"):
@@ -715,6 +716,9 @@ class ImageData:
         
         # Get the generated story from the response
         story = response.choices[0].text.strip()
+        # for debugging
+        print(prompt)
+        print(story)
         # Print and return the story
         return story
 

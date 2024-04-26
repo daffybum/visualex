@@ -242,6 +242,7 @@ def upload_image():
             image_controller = controller.StoreImagesController()
             image_path = os.path.join(UPLOAD_FOLDER, filename)
             image_id = image_controller.store_img(image_path)
+            session['image_id'] = image_id
             session['laplacian_score'] = score # store the laplacian score in the session
             session['filename'] = filename
             flash(formatted_string)
@@ -478,16 +479,26 @@ def auto_select_objects():
     username = session.get('username')
     image_id = request.form.get('image_id')
     autoSelectController = controller.AutoSelectObjectsController()
-    cropped_images = autoSelectController .auto_select_objects(image_id)
+    cropped_images = autoSelectController.auto_select_objects(image_id)
     return render_template('generateStory.html', cropped_images=cropped_images, user_name=username)
 
 @boundary.route('/generate_story', methods=['POST'])
 def generate_story():
-    object_list = request.json  # Get the order array sent from the client
+    order = request.form.get('order')  # Get the order array sent from the client
     username = session.get('username')
-    print(object_list)
+    image_id = session.get('image_id')
+    autoSelectController = controller.AutoSelectObjectsController()
+    cropped_images = autoSelectController.auto_select_objects(image_id)
+    # For debugging purposes (can ignore it)
+    #print(type(order))
+    #print(order)
+    list_order = order.split(",")
+    # For debugging purposes (can ignore it)
+    #print(type(list_order))
+    #print(list_order)
+    #story_result = "hi it's working!"
     # Process the order array as needed
     story_controller = controller.StoryTellingController()
-    story_result = story_controller.story_teller(object_list)
+    story_result = story_controller.story_teller(list_order)
     print(story_result)
-    return render_template('generateStoryV2.html', user_name=username, story=story_result)
+    return render_template('generateStory.html', user_name=username, story=story_result, cropped_images=cropped_images)
