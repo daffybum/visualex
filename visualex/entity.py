@@ -13,7 +13,8 @@ import time
 from collections import defaultdict
 from transformers import VisionEncoderDecoderModel, ViTFeatureExtractor, AutoTokenizer
 import torch
-import pyttsx3
+from gtts import gTTS
+import os
 import random
 import openai
 
@@ -727,14 +728,11 @@ class PredictionResults:
         self.confidence_score = confidence_score
         self.timestamp = timestamp
 
-    def generate_audio_from_text(self, text, output_file):
+    def generate_audio_from_text(self, text, output_file="audio.mp3"):
         try:
-            engine = pyttsx3.init(driverName='sapi5')
-            engine = pyttsx3.init()
-            engine.setProperty('rate', 150)  # Speed of speech
-            engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
-            engine.say(text)
-            engine.runAndWait()
+            tts = gTTS(text=text, lang='en')  # Create gTTS object
+            tts.save(output_file)  # Save the synthesized speech to a file
+            return True
         except Exception as e:
             print(f"Error generating audio: {e}")
             return False
