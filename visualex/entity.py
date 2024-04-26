@@ -16,7 +16,6 @@ import torch
 from gtts import gTTS
 import os
 import random
-import openai
 
 class UserAccount:
     def __init__(self, username=None, password=None, name=None, surname=None, email=None, date_of_birth=None, address=None, membership_tier="basic"):
