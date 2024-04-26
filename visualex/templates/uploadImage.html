@@ -61,6 +61,11 @@
             <form action="/generateaudio" method="POST">
                 <input type="hidden" name="text" value="{{ prediction_result }}">
                 <button type="submit" class="btn btn-info">Generate Audio</button>
+                <br>
+                <audio controls>
+                    <source src="{{ url_for('static', filename='audio.mp3') }}" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
             </form>
             <!-- Display generated text with scrolling -->
             <div>
