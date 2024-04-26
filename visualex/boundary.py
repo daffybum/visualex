@@ -276,10 +276,10 @@ def display_profile():
     username = session.get('username')
     if username:
         display= controller.DisplayController()
-        user = display.get_user_info(username)
+        user = display.get_user_info2(username)
         if user:
-            username,password,name, surname, date_of_birth,email, address,membership_tier = user
-            return render_template("accountdetail.html", username=username,password=password,name=name, surname=surname,date_of_birth=date_of_birth, email=email, address=address, membership_tier=membership_tier,user_name = username)
+            username ,name, surname, email, date_of_birth, address, membershipTier = user
+            return render_template("accountdetail.html", username=username,name=name, surname=surname, email=email, date_of_birth=date_of_birth, address=address, membershipTier = membershipTier, user_name = username)
         else:
             flash('User not found', category='error')
             return redirect(url_for('boundary.login'))
