@@ -352,18 +352,16 @@ def delete_account():
 @boundary.route('/generateaudio', methods=['GET', 'POST'])
 def generate_audio():
     if request.method == 'POST':
-        username = session.get('username')
         text = request.form.get('text')
-        image_id = request.form.get('image_id')
-        filename = session.get('filename')
-        prediction_result = session.get('prediction_result')
-        output_file = "static/output_audio.mp3"  # Change this to your desired output file name
+        output_file = 'visualex/static/audio.mp3'  # Output file path for generated audio
+        #absolute_path = os.path.abspath(output_file)
+        #print(f"Absolute path: {absolute_path}")
         text_to_audio_controller = controller.TextToAudioController()
         success = text_to_audio_controller.generate_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
-    return render_template("uploadImage.html", text=text,user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
-
+    return render_template("uploadImage.html", text=text)
+    
 @boundary.route('/assignmembership', methods=['GET', 'POST'])
 def assign_membership():
     # Retrieve username and membership tier
