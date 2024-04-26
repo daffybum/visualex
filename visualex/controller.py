@@ -151,3 +151,10 @@ class AutoSelectObjectsController:
         
     def auto_select_objects(self, image_id):
         return self.objectImages.autoSelectObjects(image_id)
+
+class StoryTellingController:
+    def __init__(self):
+        self.story = entity.ImageData()
+        
+    def story_teller(self, object_list):
+        return self.story.storyTelling(object_list)

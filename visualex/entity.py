@@ -14,6 +14,8 @@ from collections import defaultdict
 from transformers import VisionEncoderDecoderModel, ViTFeatureExtractor, AutoTokenizer
 import torch
 import pyttsx3
+import random
+import openai
 
 class UserAccount:
     def __init__(self, username=None, password=None, name=None, surname=None, email=None, date_of_birth=None, address=None, membership_tier="basic"):
@@ -679,6 +681,42 @@ class ImageData:
 
 
         return cropped_images
+    
+    def storyTelling(self, object_list):
+        # Set up your OpenAI API key
+        openai.api_key = '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'
+        
+        # Dictionary containing prompts based on the length of the object list
+        prompts = {
+            1: "Once upon a time, there was a {}. What adventures did it have?",
+            2: "A {} and a {} went on a journey together. What challenges did they face?",
+            3: "In a magical forest, a {}, a {}, and a {} discovered a hidden treasure. What was it, and what did they do with it?",
+            4: "Four friends - a {}, a {}, a {}, and a {} - decided to start a band. What kind of music did they play, and what was their first big performance like?",
+            5: "Five unlikely companions - a {}, a {}, a {}, a {}, and a {} - found themselves trapped in a mysterious labyrinth. How did they escape?",
+            6: "Six objects - {}, {}, {}, {}, {}, and {} - gained magical powers overnight. How did they use their newfound abilities?",
+        }
+        
+        # Select the appropriate prompt based on the length of the object list
+        prompt = prompts.get(len(object_list))
+        
+        # If prompt is not found, return an error
+        if not prompt:
+            return "Sorry, unsupported number of objects"
+        
+        # Format the prompt with the object list
+        prompt = prompt.format(*object_list)
+        
+        # Use GPT-3.5 to generate the story
+        response = openai.Completion.create(
+            model="gpt-3.5-turbo-instruct",
+            prompt=prompt,
+            temperature=0.4,
+        )
+        
+        # Get the generated story from the response
+        story = response.choices[0].text.strip()
+        # Print and return the story
+        return story
 
 class PredictionResults:
     def __init__(self, result_id=None, model_id=None, image_id=None, predicted_label=None, confidence_score=None, timestamp=None):

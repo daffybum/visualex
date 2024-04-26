@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
 from . import mysql
 
 import stripe
@@ -352,13 +352,17 @@ def delete_account():
 @boundary.route('/generateaudio', methods=['GET', 'POST'])
 def generate_audio():
     if request.method == 'POST':
+        username = session.get('username')
         text = request.form.get('text')
+        image_id = request.form.get('image_id')
+        filename = session.get('filename')
+        prediction_result = session.get('prediction_result')
         output_file = "static/output_audio.mp3"  # Change this to your desired output file name
         text_to_audio_controller = controller.TextToAudioController()
         success = text_to_audio_controller.generate_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
-    return render_template("uploadImage.html", text=text)
+    return render_template("uploadImage.html", text=text,user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
 
 @boundary.route('/assignmembership', methods=['GET', 'POST'])
 def assign_membership():
@@ -389,6 +393,7 @@ def generateText():
     print(filename)
     prediction_controller = controller.GenerateTextController()
     prediction_result = prediction_controller.generate_text(image_id)
+    session['prediction_result'] = prediction_result
     storePredictedResultsController = controller.storePredictedResultsController() # store entry in prediction_results table
     storePredictedResultsController.store_PredictedResults(username, image_id,prediction_result,laplacian_score)
     # Do something with the image_id, such as storing it in a database
@@ -477,3 +482,14 @@ def auto_select_objects():
     autoSelectController = controller.AutoSelectObjectsController()
     cropped_images = autoSelectController .auto_select_objects(image_id)
     return render_template('generateStory.html', cropped_images=cropped_images, user_name=username)
+
+@boundary.route('/generate_story', methods=['POST'])
+def generate_story():
+    object_list = request.json  # Get the order array sent from the client
+    username = session.get('username')
+    print(object_list)
+    # Process the order array as needed
+    story_controller = controller.StoryTellingController()
+    story_result = story_controller.story_teller(object_list)
+    print(story_result)
+    return render_template('generateStoryV2.html', user_name=username, story=story_result)
