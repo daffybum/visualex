@@ -118,10 +118,10 @@ class StoreImagesController:
     
 class TextToAudioController:
     def __init__(self):
-        self.predictionresults = entity.PredictionResults()
+        self.audio = entity.PredictionResults()
 
     def generate_audio_from_text(self, text, output_file):
-        return self.predictionresults.generate_audio_from_text(text, output_file)
+        return self.audio.generate_audio_from_text(text, output_file)
 
 class GenerateTextController:
     def __init__(self):
