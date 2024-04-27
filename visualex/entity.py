@@ -738,10 +738,10 @@ class PredictionResults:
         try:
             tts = gTTS(text=text, lang='en')  # Create gTTS object
             tts.save(output_file)  # Save the synthesized speech to a file
-            return True
+            return True, None  # Return success status and no error
         except Exception as e:
             print(f"Error generating audio: {e}")
-            return False
+            return False, str(e)
             
 class Blur_Detection:
 
