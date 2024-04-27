@@ -711,7 +711,10 @@ class ImageData:
         response = openai.Completion.create(
             model="gpt-3.5-turbo-instruct",
             prompt=prompt,
-            temperature=0.4,
+            temperature=0.5,
+            # the more tokens the more words you'll generate commenting it out for now since we're also charged for the amount of tokens usage for the api
+            # can always uncomment for debugging and modification purposes
+            # max_tokens=150
         )
         
         # Get the generated story from the response
