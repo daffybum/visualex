@@ -355,8 +355,8 @@ def generate_audio():
     if request.method == 'POST':
         text = request.form.get('text')
         output_file = 'visualex/static/audio.mp3'  # Output file path for generated audio
-        #absolute_path = os.path.abspath(output_file)
-        #print(f"Absolute path: {absolute_path}")
+        absolute_path = os.path.abspath(output_file)
+        print(f"Absolute path: {absolute_path}")
         text_to_audio_controller = controller.TextToAudioController()
         success = text_to_audio_controller.generate_audio_from_text(text, output_file)
         if success:
