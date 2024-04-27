@@ -742,10 +742,7 @@ class PredictionResults:
         except Exception as e:
             print(f"Error generating audio: {e}")
             return False
-
-import cv2
-import numpy
-
+            
 class Blur_Detection:
 
     @staticmethod
