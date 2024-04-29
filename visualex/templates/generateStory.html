@@ -85,25 +85,33 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
-        $( function() {
-            $( "#sortable" ).sortable({
+        $(function() {
+            $("#sortable").sortable({
                 update: function(event, ui) {
-                    var order = [];
-                    $(".object-image").each(function() {
-                        order.push($(this).attr('id'));
-                    });
-                    // Update the hidden input value
-                    $("#listOrderInput").val(order.join(","));
-                    console.log(order);
-                }   
+                    updateOrder();
+                }
             });
-            $( "#sortable" ).disableSelection();
+            $("#sortable").disableSelection();
     
             // Submit the form when the button is clicked
             $("#generateButton").click(function() {
                 $("#generateStoryForm").submit();
             });
+    
+            function updateOrder() {
+                var order = [];
+                $(".object-image").each(function() {
+                    order.push($(this).attr('id'));
+                });
+                $("#listOrderInput").val(order.join(","));
+                console.log(order);
+            }
+    
+            // Trigger update manually if only one object is present
+            if ($(".object-image").length === 1) {
+                updateOrder();
+            }
         });
-    </script>    
+    </script>
 </body>
 {% endblock %}
