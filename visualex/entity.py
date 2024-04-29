@@ -688,6 +688,10 @@ class ImageData:
         # Set up your OpenAI API key
         openai.api_key = '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'
         
+        #debugging
+        #print("Entity: ")
+        #print(object_list)
+        
         # Dictionary containing prompts based on the length of the object list
         prompts = {
             1: "Once upon a time, there was a {}. What adventures did it have?",
@@ -715,14 +719,14 @@ class ImageData:
             temperature=0.5,
             # the more tokens the more words you'll generate commenting it out for now since we're also charged for the amount of tokens usage for the api
             # can always uncomment for debugging and modification purposes
-            # max_tokens=150
+             max_tokens=300
         )
         
         # Get the generated story from the response
         story = response.choices[0].text.strip()
         # for debugging
-        print(prompt)
-        print(story)
+        #print(prompt)
+        #print(story)
         # Print and return the story
         return story
 

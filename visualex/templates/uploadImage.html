@@ -57,6 +57,14 @@
                 </p>
             </form>
 
+            <!-- Button to select images -->
+            <form method="post" action="/selectiveAnalysis">
+                <input type="hidden" name="image_id" value="{{ image_id }}">
+                <p>
+                    <button type="submit" class="btn btn-info">Selective Analysis</button>
+                </p>
+            </form>
+
             <!-- Button to generate audio -->
             <form action="/generateaudio" method="POST">
                 <input type="hidden" name="text" value="{{ prediction_result }}">
