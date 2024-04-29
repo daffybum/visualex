@@ -27,6 +27,7 @@
         <!-- navbar links -->
         <div class="collapse navbar-collapse justify-content-end align-left" id="main-nav">
           <ul class="navbar-nav">
+            {% if user_name != "admin" %}
             <li class="nav-item">
               <a class="nav-link" href="/uploadImage">Upload Image</a>
             </li>
@@ -36,6 +37,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/membersubscription">Subscriptions</a>
             </li>
+            {% endif %}
             <li class="nav-item">
             {% if user_name != "admin" %}
               <a class="nav-link" href="/userfb">Feedback Forum</a>
@@ -46,9 +48,11 @@
                 <a class="nav-link" href="/adminfb">View Users' Feedback</a>
               {% endif %}
               </li>
+            {% if user_name != "admin" %}
             <li class="nav-item">
               <a class="nav-link" href="/about-us">About Us</a>
             </li>
+            {% endif %}
             {% if user_name == "admin" %}
             <li>
               <a class="nav-link" href="/viewAllUsers">View All User Account</a>
