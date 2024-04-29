@@ -123,6 +123,9 @@ class TextToAudioController:
     def generate_audio_from_text(self, text, output_file):
         return self.audio.generate_audio_from_text(text, output_file)
 
+    def generate_story_audio_from_text(self, text, output_file):
+        return self.audio.generate_story_audio_from_text(text, output_file)
+
 class GenerateTextController:
     def __init__(self):
         self.genText = entity.ImageData()
