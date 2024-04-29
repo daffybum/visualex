@@ -359,13 +359,26 @@ def generate_audio():
         prediction_result = session.get('prediction_result')
         filename = session.get('filename')
         output_file = 'visualex/static/audio.mp3'  # Output file path for generated audio
-        absolute_path = os.path.abspath(output_file)
-        print(f"Absolute path: {absolute_path}")
         text_to_audio_controller = controller.TextToAudioController()
         success = text_to_audio_controller.generate_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
     return render_template("uploadImage.html", text=text, user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
+
+@boundary.route('/generatestoryaudio', methods=['GET', 'POST'])
+def generate_storyaudio():
+    if request.method == 'POST':
+        text = request.form.get('text')
+        username = session.get('username')
+        image_id = request.form.get('image_id')
+        prediction_result = session.get('prediction_result')
+        filename = session.get('filename')
+        output_file = 'visualex/static/storyaudio.mp3'  # Output file path for generated audio
+        text_to_audio_controller = controller.TextToAudioController()
+        success = text_to_audio_controller.story_audio(text, output_file)
+        if success:
+            flash('Audio generated successfully!', category='success')  # Flash success message
+    return render_template("generateStory.html", text=text, user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
     
 @boundary.route('/assignmembership', methods=['GET', 'POST'])
 def assign_membership():
