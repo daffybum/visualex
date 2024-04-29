@@ -478,6 +478,15 @@ def viewUserLogs():
     history_logs = history_logs_controller.viewHistory(selected_user)
     return render_template('history.html', history_logs=history_logs, user_name=username)
 
+@boundary.route('/cancel-membership', methods=['POST'])
+def cancel_membership():
+    username = session.get('username')
+    assignMembershipController = controller.AssignMembershipController()
+    membership = "basic"
+    assignMembershipController.assign_membership(username, membership)
+    flash('Membership Cancelled Successfully!')
+    return render_template('viewmembershiptier.html', user_name = username)
+
 @boundary.route('/autoSelectImages', methods=['POST'])
 def auto_select_objects():
     username = session.get('username')
