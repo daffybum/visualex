@@ -67,6 +67,16 @@
             <button type="submit" class="generate-button" id="generateButton">Generate Story</button>
         </div>
     </form>
+    <!-- Button to generate audio -->
+    <form action="/generatestoryaudio" method="POST">
+        <input type="hidden" name="text" value="{{ story }}">
+        <button type="submit" class="btn btn-info">Generate Story Audio</button>
+        <br>
+        <audio controls>
+            <source src="{{ url_for('static', filename='storyaudio.mp3') }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+    </form>
     <div>
         <h3>Output</h3>
         <textarea id="outputTextarea" name="story-ouput" rows="10" cols="50" value="{{story}}"
