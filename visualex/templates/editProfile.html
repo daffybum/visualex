@@ -64,26 +64,26 @@
         <br>
         <form method="POST">
             <label class="form-label" for="username">Username:</label>
-            <input type="text" id="username" name="username" class="form-control form-control-lg" placeholder="Enter New Username"/>
+            <input type="text" id="username" name="username" class="form-control form-control-lg" placeholder="Enter New Username"required/>
             
             <label class="form-label" for="name">Name</label>
-            <input type="text" id="name" name="name" class="form-control form-control-lg" placeholder="Enter New Name"/>
+            <input type="text" id="name" name="name" class="form-control form-control-lg" placeholder="Enter New Name"required/>
             
             <label class="form-label" for="surname">Surname</label>
-            <input type="text" id="surname" name="surname" class="form-control form-control-lg" placeholder="Enter New Surname"/>
+            <input type="text" id="surname" name="surname" class="form-control form-control-lg" placeholder="Enter New Surname"required/>
             
             <label class="form-label" for="email">Email address</label>
-            <input type="email" id="email" name="email" class="form-control form-control-lg" placeholder="Enter New Email"/>
+            <input type="email" id="email" name="email" class="form-control form-control-lg" placeholder="Enter New Email"required/>
             
             <label class="form-label" for="email">Date Of Birth</label>
-            <input type="text" id="date_of_birth" name="date_of_birth" class="form-control form-control-lg" placeholder="Enter New date of birth"/>
+            <input type="text" id="date_of_birth" name="date_of_birth" class="form-control form-control-lg" placeholder="Enter New date of birth"required/>
 
             <label class="form-label" for="address">Address</label>
-            <input type="text" id="address" name="address" class="form-control form-control-lg" placeholder="Enter New Address"/>
+            <input type="text" id="address" name="address" class="form-control form-control-lg" placeholder="Enter New Address"required/>
 
             {% if user_name == "admin" %}
             <label class="form-label" for="address">Membership Tier</label>
-            <input type="text" id="membershipTier" name="membershipTier" class="form-control form-control-lg" placeholder="Enter New Membership Tier"/>
+            <input type="text" id="membershipTier" name="membershipTier" class="form-control form-control-lg" placeholder="Enter New Membership Tier"required/>
             {% endif %}
             <br>
             <button type="submit" class="btn btn-info btn-lg btn-block">Update</button>
