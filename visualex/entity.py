@@ -747,7 +747,15 @@ class PredictionResults:
         except Exception as e:
             print(f"Error generating audio: {e}")
             return False, str(e)
-            
+
+    def generate_story_audio_from_text(self, text, output_file="storyaudio.mp3"):
+        try:
+            tts = gTTS(text=text, lang='en')
+            tts.save(output_file)
+            return True, None
+        except Exception as e:
+            print(f"Error generating audio: {e}")
+            return False, str(e)
 class Blur_Detection:
 
     @staticmethod
