@@ -497,8 +497,10 @@ def cancel_membership():
     assignMembershipController = controller.AssignMembershipController()
     membership = "basic"
     assignMembershipController.assign_membership(username, membership)
+    membership_controller = controller.MembershipController()
+    membership_tier = membership_controller.get_membership_tier_info(username)
     flash('Membership Cancelled Successfully!')
-    return render_template('viewmembershiptier.html', user_name = username)
+    return render_template('viewmembershiptier.html', user_name = username, membership_tier = membership_tier)
 
 @boundary.route('/autoSelectImages', methods=['POST'])
 def auto_select_objects():
