@@ -2,7 +2,41 @@
 {% block title %}Upload{% endblock %}
 
 {% block content %}
+<style>
+    /* Popup container */
+    .popup-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
 
+    /* Popup box */
+    .popup-box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        text-align: center;
+    }
+
+    /* Button styles */
+    .btn {
+        padding: 10px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
 <body>
     <p>
     <h1 align="center">Upload an image</h1>
@@ -55,7 +89,16 @@
                 <p>
                     <button type="submit" class="btn btn-info">Story Telling</button>
                 </p>
+               <!-- Popup container -->
             </form>
+            <!-- Popup container -->
+            <div id="popup-container" class="popup-container">
+                <div class="popup-box">
+                    <p id="message">Membership not premium. Please subscribe to use this feature.</p>
+                    <button class="btn" onclick="subscribe()">Subscribe</button>
+                    <button class="btn" onclick="closePopup()">No</button>
+                </div>
+            </div>
 
             <!-- Button to generate audio -->
             <form action="/generateaudio" method="POST">
@@ -76,5 +119,28 @@
         </div>
     </div>
 </body>
+<script>
+    window.onload = function() {
+        var message = "{{ message }}";
+        if (message !== "") {
+            showPopup();
+        }
+    };
+
+    function showPopup() {
+        var popup = document.getElementById("popup-container");
+        popup.style.display = "block";
+    }
+
+    function closePopup() {
+        var popup = document.getElementById("popup-container");
+        popup.style.display = "none";
+    }
+
+    function subscribe() {
+            window.location.href = '/membersubscription';
+    }
+
+</script>
 
 {% endblock %}

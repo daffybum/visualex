@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Images Generation{% endblock %}
+
+{% block content %}
+
+
+<style>
+    #articleInput {
+        width: 80%;
+        height: 300px;
+        margin: auto; /* Center the text area horizontally */
+        display: block; /* Ensure the text area takes up the full width */
+    }
+
+    h2 {
+            text-align: center; /* Center the heading horizontally */
+        }
+
+    #generateButton {
+        display: block; /* Ensure the button takes up the full width */
+        margin: auto; /* Center the button horizontally */
+    }
+</style>
+
+
+
+<body>
+    <h2>Enter Text</h2>
+    <textarea id="articleInput" style="width: 80%; height: 300px;" placeholder="Enter Your Text"></textarea>
+    <br>
+    <button id="generateButton" onclick="generateImage()">Generate Image</button>
+    <div id="imageContainer">
+        <!-- Image will be displayed here -->
+    </div>
+</body>
+
+{% endblock %}

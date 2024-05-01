@@ -256,7 +256,17 @@ class UserAccount:
             print(f"Error deleting account: {e}")
             return False
 
-
+    def get_membership_tier(self, username):
+        try:
+            cur = mysql.connection.cursor()
+            query = "SELECT membership_tier FROM useraccount WHERE username = %s"
+            cur.execute(query, (username,))
+            membership_tier = cur.fetchone()[0]
+            cur.close()
+            return membership_tier
+        except Exception as e:
+            print(f"No membership tier info for current user: {e}")
+            return None
 
 class FeedbackForum:
     def __init__(self, feedback_id=None, username=None, content=None, feedback_date=None):

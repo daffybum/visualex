@@ -210,6 +210,7 @@ def upload():
  
 @boundary.route('/uploadImage', methods=['POST'])
 def upload_image():
+    username = session.get('username')
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
@@ -248,7 +249,7 @@ def upload_image():
             flash(formatted_string)
             print('upload_image filename: ' + filename)
             flash('Image successfully uploaded')
-            return render_template('uploadImage.html', filename=filename, image_id=image_id)
+            return render_template('uploadImage.html', filename=filename, image_id=image_id, user_name=username)
     else:
         flash('Allowed image types are - png and jpeg only')
         return redirect(request.url)
@@ -505,7 +506,16 @@ def cancel_membership():
 @boundary.route('/autoSelectImages', methods=['POST'])
 def auto_select_objects():
     username = session.get('username')
-    image_id = request.form.get('image_id')
+    image_id = session.get('image_id')
+    filename = session.get('filename')
+    membershipController = controller.MembershipController()
+    membership = membershipController.getUserMembership(username)
+    
+    # Check if membership is premium
+    if membership != 'premium':
+        message = "Membership not premium. Please subscribe to use this feature"
+        return render_template('uploadImage.html', message=message, user_name=username, image_id=image_id, filename=filename)
+    
     autoSelectController = controller.AutoSelectObjectsController()
     cropped_images = autoSelectController.auto_select_objects(image_id)
     return render_template('generateStory.html', cropped_images=cropped_images, user_name=username)

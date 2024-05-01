@@ -66,7 +66,10 @@ class MembershipController:
         return self.view_membership_tier.get_membership_tier_info(username)
     
     def getAllmembership(self):
-        return self.view_membership_tier.getAllmembership()    
+        return self.view_membership_tier.getAllmembership()
+
+    def getUserMembership(self, username):
+        return self.view_membership_tier.get_membership_tier(username)
 
 class AssignMembershipController:
     def __init__(self):
