@@ -758,6 +758,9 @@ class PredictionResults:
 
     def generate_audio_from_text(self, text, output_file="audio.mp3"):
         try:
+            if os.path.exists(output_file):
+                os.remove(output_file)
+            
             tts = gTTS(text=text, lang='en')  # Create gTTS object
             tts.save(output_file)  # Save the synthesized speech to a file
             return True, None  # Return success status and no error
@@ -767,6 +770,9 @@ class PredictionResults:
 
     def generate_story_audio_from_text(self, text, output_file="storyaudio.mp3"):
         try:
+            if os.path.exists(output_file):
+                os.remove(output_file)
+                
             tts = gTTS(text=text, lang='en')
             tts.save(output_file)
             return True, None
