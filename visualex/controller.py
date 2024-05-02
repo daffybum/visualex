@@ -164,3 +164,9 @@ class StoryTellingController:
         
     def story_teller(self, object_list):
         return self.story.storyTelling(object_list)
+
+class imagesGenerationController:
+    def __init__(self):
+        self.images = entity.ImageData()
+    def imagesGenerator(self, prompt):
+        return self.images.imagesGeneration(prompt)

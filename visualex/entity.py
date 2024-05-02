@@ -739,6 +739,13 @@ class ImageData:
         #print(story)
         # Print and return the story
         return story
+                                                                               
+    def imagesGeneration(self, prompt):
+        openai.api_key = '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'
+
+        response = openai.Image.create(prompt=prompt, n=3, size="512x512")
+        print(response['data'])
+        return response['data']
 
 class PredictionResults:
     def __init__(self, result_id=None, model_id=None, image_id=None, predicted_label=None, confidence_score=None, timestamp=None):
@@ -751,6 +758,9 @@ class PredictionResults:
 
     def generate_audio_from_text(self, text, output_file="audio.mp3"):
         try:
+            if os.path.exists(output_file):
+                os.remove(output_file)
+            
             tts = gTTS(text=text, lang='en')  # Create gTTS object
             tts.save(output_file)  # Save the synthesized speech to a file
             return True, None  # Return success status and no error
@@ -760,6 +770,9 @@ class PredictionResults:
 
     def generate_story_audio_from_text(self, text, output_file="storyaudio.mp3"):
         try:
+            if os.path.exists(output_file):
+                os.remove(output_file)
+                
             tts = gTTS(text=text, lang='en')
             tts.save(output_file)
             return True, None

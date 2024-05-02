@@ -92,7 +92,9 @@
                 }
             });
             $("#sortable").disableSelection();
-    
+            
+            updateOrder(); // Call updateOrder immediately
+            
             // Submit the form when the button is clicked
             $("#generateButton").click(function() {
                 $("#generateStoryForm").submit();
@@ -106,12 +108,8 @@
                 $("#listOrderInput").val(order.join(","));
                 console.log(order);
             }
-    
-            // Trigger update manually if only one object is present
-            if ($(".object-image").length === 1) {
-                updateOrder();
-            }
         });
     </script>
+    
 </body>
 {% endblock %}
