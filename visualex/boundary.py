@@ -228,7 +228,7 @@ def upload_image():
         image = cv2.imread(str(image))
         results = []
 
-        blur_map,score, blurry = entity.Blur_Detection.estimate_blur(image, threshold=100.0)
+        blur_map,score, blurry = entity.Blur_Detection.estimate_blur(image, threshold=250.0)
         results.append({'Laplacian score': score, 'blurry': blurry})
         for item in results:
                 # Construct a formatted string for the dictionary
