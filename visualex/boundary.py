@@ -555,6 +555,14 @@ def generate_image():
     prompt = request.form['prompt']
     username = session.get('username')
     print("have reach boundary")
+    membershipController = controller.MembershipController()
+    membership = membershipController.getUserMembership(username)
+    
+    # Check if membership is premium
+    if membership != 'premium':
+        message = "Membership not premium. Please subscribe to use this feature"
+        return render_template('imagesGeneration.html', message=message, user_name=username)
+    
     images_controller = controller.imagesGenerationController()
     images_result = images_controller.imagesGenerator(prompt)
     if len(images_result)>0:
