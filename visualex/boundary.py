@@ -371,7 +371,6 @@ def generate_storyaudio():
     if request.method == 'POST':
         text = request.form.get('text')
         username = session.get('username')
-        story_result = session.get('story_result')
         image_id = request.form.get('image_id')
         prediction_result = session.get('prediction_result')
         filename = session.get('filename')
@@ -380,7 +379,7 @@ def generate_storyaudio():
         success = text_to_audio_controller.generate_story_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
-    return render_template("generateStory.html", user_name=username,  story=story_result)
+    return render_template("generateStory.html", user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
     
 @boundary.route('/assignmembership', methods=['GET', 'POST'])
 def assign_membership():
