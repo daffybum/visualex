@@ -739,6 +739,13 @@ class ImageData:
         #print(story)
         # Print and return the story
         return story
+                                                                               
+    def imagesGeneration(self, prompt):
+        openai.api_key = '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'
+
+        response = openai.Image.create(prompt=prompt, n=3, size="512x512")
+        print(response['data'])
+        return response['data']
 
 class PredictionResults:
     def __init__(self, result_id=None, model_id=None, image_id=None, predicted_label=None, confidence_score=None, timestamp=None):

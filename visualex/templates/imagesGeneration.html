@@ -5,9 +5,9 @@
 
 
 <style>
-    #articleInput {
+    #prompt {
         width: 80%;
-        height: 300px;
+        height: 40px;
         margin: auto; /* Center the text area horizontally */
         display: block; /* Ensure the text area takes up the full width */
     }
@@ -20,18 +20,25 @@
         display: block; /* Ensure the button takes up the full width */
         margin: auto; /* Center the button horizontally */
     }
+    
+    #image-gen {
+        display: block; /* Ensure the button takes up the full width */
+        margin: auto; /* Center the button horizontally */
+    }
 </style>
 
 
 
 <body>
     <h2>Enter Text</h2>
-    <textarea id="articleInput" style="width: 80%; height: 300px;" placeholder="Enter Your Text"></textarea>
-    <br>
-    <button id="generateButton" onclick="generateImage()">Generate Image</button>
-    <div id="imageContainer">
-        <!-- Image will be displayed here -->
-    </div>
+    <form id="generateImages" method="post" action="/imagesGeneration">
+        <textarea id="prompt" name="prompt"  placeholder="Enter Your Prompt for Image Generation">{{prompt}}</textarea>
+        <br>
+        <button type="submit" class="generate-button" id="generateButton">Generate Images</button>
+    </form>
+    {% for image in images %}
+    <img class="image-gen" src = "{{image}} " alt ="OpenAI Image Generation">
+    {% endfor %}
 </body>
 
 {% endblock %}

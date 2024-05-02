@@ -371,15 +371,16 @@ def generate_storyaudio():
     if request.method == 'POST':
         text = request.form.get('text')
         username = session.get('username')
+        story_result = session.get('story_result')
         image_id = request.form.get('image_id')
         prediction_result = session.get('prediction_result')
         filename = session.get('filename')
         output_file = 'visualex/static/storyaudio.mp3'  # Output file path for generated audio
         text_to_audio_controller = controller.TextToAudioController()
-        success = text_to_audio_controller.story_audio(text, output_file)
+        success = text_to_audio_controller.generate_story_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
-    return render_template("generateStory.html", text=text, user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
+    return render_template("generateStory.html", user_name=username,  story=story_result)
     
 @boundary.route('/assignmembership', methods=['GET', 'POST'])
 def assign_membership():
@@ -535,19 +536,29 @@ def generate_story():
     # For debugging purposes (can ignore it)
     print(type(list_order))
     print(list_order)
-    story_result = "hi it's working!"
+    #story_result = "hi it's working!"
     # Process the order array as needed
     story_controller = controller.StoryTellingController()
     story_result = story_controller.story_teller(list_order)
-    print(story_result)
+    session['story_result'] = story_result
+    #print(story_result)
     return render_template('generateStory.html', user_name=username, story=story_result, cropped_images=cropped_images)
 
-# testing in progress
-"""
-@boundary.route('/selectiveAnalysis', methods=['POST'])
-def circle_image():
+@boundary.route('/imageGeneration')
+def image_gen():
     username = session.get('username')
-    image_id = session.get('image_id')
-    filename = session.get('filename')
-    return render_template('selectiveAnalysis.html', user_name=username, image_id=image_id, filename=filename)
-"""
+    return render_template('imagesGeneration.html', user_name = username)
+
+@boundary.route('/imagesGeneration', methods = ['POST'])
+def generate_image():
+    images = []
+    prompt = request.form['prompt']
+    username = session.get('username')
+    print("have reach boundary")
+    images_controller = controller.imagesGenerationController()
+    images_result = images_controller.imagesGenerator(prompt)
+    if len(images_result)>0:
+        for img in images_result:
+            images.append(img['url'])
+
+    return render_template("imagesGeneration.html",user_name = username, prompt=prompt, images = images)
