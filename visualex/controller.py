@@ -170,3 +170,17 @@ class imagesGenerationController:
         self.images = entity.ImageData()
     def imagesGenerator(self, prompt):
         return self.images.imagesGeneration(prompt)
+    
+class ReplyToFeedbackController():
+    def __init__(self):
+        self.reply = entity.FeedbackForum()
+        
+    def replyToFeedback(self, feedback_id, reply):
+        return self.reply.reply_feedback(feedback_id, reply)
+    
+class ViewRepliesController():
+    def __init__(self):
+        self.reply_list = entity.FeedbackForum()
+        
+    def getReplies(self, feedback_id):
+        return self.reply_list.get_replies(feedback_id)

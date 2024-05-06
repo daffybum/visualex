@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}User Feedback{% endblock %}
+{% block title %}Admin Feedback{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -8,7 +8,15 @@
       <h1 class="float-start feedback-heading">Feedback Forum</h1>
     </div>
   </div>
-
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul>
+      {% for category, message in messages %}
+        <li class="alert alert-{{ category }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
   <!-- Feedback Section -->
   <div class="feedback-section" style="height: 600px; overflow-y: auto;">
     <ol class="list-group list-group-numbered">
@@ -31,9 +39,18 @@
             <div class="fw-bold" style="display: inline;">Feedback:</div>
             <div style="display: inline;">{{ feedback.content }}</div>
           </div>
+          <!-- Form for Admin reply -->
+          <form action="/replyfeedback" method="post" class="ms-auto">
+            <input type="hidden" name="feedback_id" value="{{ feedback.feedback_id }}">
+            <div class="mb-3">
+                <label for="reply_content" class="form-label">Reply:</label>
+                <textarea class="form-control" id="reply_content" name="reply_content" rows="2" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Reply</button>
+        </form>
         </div>
         <!-- Move time_difference to the far right side -->
-        <div class="ms-auto">
+        <div>
           <div style="display: inline;">{{ feedback.time_difference(feedback.feedback_date) }}</div>
         </div>
       </li>

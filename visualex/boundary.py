@@ -569,3 +569,35 @@ def generate_image():
             images.append(img['url'])
 
     return render_template("imagesGeneration.html",user_name = username, prompt=prompt, images = images)
+
+@boundary.route('/replyfeedback', methods=['POST'])
+def reply_feedback():
+    # Get data from the form
+    feedback_id = request.form['feedback_id']
+    reply_content = request.form['reply_content']
+    
+    replyFBController = controller.ReplyToFeedbackController()
+    reply = replyFBController.replyToFeedback(feedback_id, reply_content)
+    
+    if reply:
+        flash('Reply sent successfully', 'success')
+    else:
+        flash('Failed to send reply', 'error')
+    
+    username = session.get('username')          
+    feedback_controller = controller.ViewFeedbackController()
+    feedback_list = feedback_controller.viewFeedback()
+    return render_template("feedbackAdminPage.html", feedback_list=feedback_list, user_name=username)
+
+@boundary.route('/viewreply', methods=['POST'])
+def view_reply():
+    username = session.get('username') 
+    feedback_id = request.form.get('feedback_id')    
+    feedback_controller = controller.ViewFeedbackController()
+    feedback_list = feedback_controller.viewFeedback()
+    
+    replyController = controller.ViewRepliesController()
+    reply_list = replyController.getReplies(feedback_id)
+    print(reply_list)
+    
+    return render_template("feedbackUserPage.html", feedback_list=feedback_list, user_name=username, reply_list=reply_list)

@@ -338,6 +338,51 @@ class FeedbackForum:
         else:
             years = days // 365
             return f"{years} years ago"
+        
+    def reply_feedback(self, feedback_id, reply):
+        try:
+            cur = mysql.connection.cursor()
+
+            query = "INSERT INTO feedback_replies (feedback_id, reply_content, reply_date) VALUES (%s, %s, %s)"
+            data = (feedback_id, reply, datetime.now())
+            cur.execute(query, data)
+
+            mysql.connection.commit()
+
+            cur.close()
+            return True
+        except Exception as e:
+            print(f"Error replying to feedback: {e}")
+            return False
+        
+    def get_replies(self, feedback_id):
+        try:
+            cur = mysql.connection.cursor()
+
+            query = "SELECT reply_id, feedback_id, reply_content, reply_date FROM feedback_replies WHERE feedback_id = %s"
+            cur.execute(query, (feedback_id,))
+            
+            reply_list = []
+            for reply_data in cur.fetchall():
+                reply_id = reply_data[0]
+                feedback_id = reply_data[1]
+                reply_content = reply_data[2]
+                reply_date = reply_data[3]
+                
+                reply = {
+                    'reply_id': reply_id,
+                    'feedback_id': feedback_id,
+                    'reply_content': reply_content,
+                    'reply_date': reply_date
+                }
+                reply_list.append(reply)
+
+            cur.close()
+            return reply_list
+        except Exception as e:
+            print(f"Error getting replies for feedback ID {feedback_id}: {e}")
+
+
 
 class Transactions:
     def __init__(self, transaction_id=None, username=None, payment_timestamp=None, charges=None):
