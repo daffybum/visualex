@@ -36,13 +36,9 @@
                 <div class="fw-bold" style="display: inline;">Feedback:</div>
                 <div style="display: inline;">{{ feedback.content }}</div>
               </div>
-              <!-- Form around the button -->
-              <form action="{{ url_for('boundary.view_reply') }}" method="post">
-                <input type="hidden" name="feedback_id" value="{{ feedback.feedback_id }}">
-                <button type="submit" class="btn btn-info toggle-replies" data-feedback-id="{{ feedback.feedback_id }}">View Replies</button>
-              </form>
+              <button class="toggle-replies">View Replies</button>
               <!-- Replies section -->
-              <ul class="replies hidden" id="replies_{{ feedback.feedback_id }}">
+              <ul class="replies hidden">
                 {% for reply in reply_list|reverse %}
                 {% if reply.feedback_id == feedback.feedback_id %}
                 <li class="reply">
@@ -69,30 +65,39 @@
 
 <style>
 .replies {
-  list-style-type: none;
-  margin-top: 10px;
-  padding: 0;
+    list-style-type: none;
+    margin-top: 10px;
+    padding: 0;
 }
 
 .replies li {
-  border: 1px solid #eee;
-  padding: 5px;
-  margin-top: 5px;
+    border: 1px solid #eee;
+    padding: 5px;
+    margin-top: 5px;
 }
+.hidden {
+    display: none;
+}
+.reply {
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+
 </style>
 
 <script>
-document.querySelectorAll('.toggle-replies').forEach(button => {
-  button.addEventListener('click', function() {
-    const feedbackId = this.getAttribute('data-feedback-id');
-    const repliesSection = document.getElementById("replies_" + feedbackId);
-    repliesSection.classList.toggle('hidden');
-    if (repliesSection.classList.contains('hidden')) {
-      this.textContent = 'View Replies';
-    } else {
-      this.textContent = 'Hide Replies';
-    }
+  document.querySelectorAll('.toggle-replies').forEach(button => {
+      button.addEventListener('click', function() {
+          const repliesList = this.nextElementSibling;
+          repliesList.classList.toggle('hidden');
+          if (repliesList.classList.contains('hidden')) {
+              this.textContent = 'View Replies';
+          } else {
+              this.textContent = 'Hide Replies';
+          }
+      });
   });
-});
 </script>
 {% endblock %}

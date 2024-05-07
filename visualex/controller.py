@@ -182,5 +182,5 @@ class ViewRepliesController():
     def __init__(self):
         self.reply_list = entity.FeedbackForum()
         
-    def getReplies(self, feedback_id):
-        return self.reply_list.get_replies(feedback_id)
+    def getReplies(self):
+        return self.reply_list.get_replies()

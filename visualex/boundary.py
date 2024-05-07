@@ -163,7 +163,12 @@ def user_feedback():
     username = session.get('username')
     feedback_controller = controller.ViewFeedbackController()
     feedback_list = feedback_controller.viewFeedback()
-    return render_template("feedbackUserPage.html", feedback_list=feedback_list, user_name = username)
+    
+    replyController = controller.ViewRepliesController()
+    reply_list = replyController.getReplies()
+    print(reply_list)
+    
+    return render_template("feedbackUserPage.html", feedback_list=feedback_list, user_name = username, reply_list=reply_list)
 
 
 @boundary.route('/submitfb', methods=['GET', 'POST'])
@@ -589,6 +594,7 @@ def reply_feedback():
     feedback_list = feedback_controller.viewFeedback()
     return render_template("feedbackAdminPage.html", feedback_list=feedback_list, user_name=username)
 
+"""
 @boundary.route('/viewreply', methods=['POST'])
 def view_reply():
     username = session.get('username') 
@@ -601,3 +607,4 @@ def view_reply():
     print(reply_list)
     
     return render_template("feedbackUserPage.html", feedback_list=feedback_list, user_name=username, reply_list=reply_list)
+"""

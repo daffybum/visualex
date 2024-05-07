@@ -355,12 +355,12 @@ class FeedbackForum:
             print(f"Error replying to feedback: {e}")
             return False
         
-    def get_replies(self, feedback_id):
+    def get_replies(self):
         try:
             cur = mysql.connection.cursor()
 
-            query = "SELECT reply_id, feedback_id, reply_content, reply_date FROM feedback_replies WHERE feedback_id = %s"
-            cur.execute(query, (feedback_id,))
+            query = "SELECT reply_id, feedback_id, reply_content, reply_date FROM feedback_replies"
+            cur.execute(query)
             
             reply_list = []
             for reply_data in cur.fetchall():
@@ -380,7 +380,8 @@ class FeedbackForum:
             cur.close()
             return reply_list
         except Exception as e:
-            print(f"Error getting replies for feedback ID {feedback_id}: {e}")
+            print(f"Error getting replies: {e}")
+
 
 
 
