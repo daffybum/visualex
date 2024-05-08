@@ -246,12 +246,10 @@ class UserAccount:
             cur = mysql.connection.cursor()
             delete_query = "DELETE FROM useraccount WHERE username = %s"
             delete_query1 = "DELETE FROM feedback WHERE username = %s"
-            delete_query2 = "DELETE FROM transaction WHERE username = %s"
-            delete_query3 = "DELETE FROM history WHERE username = %s"
+            delete_query2 = "DELETE FROM history WHERE username = %s"
             cur.execute(delete_query, (username,))
             cur.execute(delete_query1, (username,))
             cur.execute(delete_query2, (username,))
-            cur.execute(delete_query3, (username,))
             mysql.connection.commit()
             cur.close()
             return True
