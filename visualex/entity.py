@@ -62,7 +62,6 @@ class UserAccount:
             print(f"Error changing Password: {e}")
             return False
 
-
     def createUserAcc(self, userAcc):
         try:
            cur = mysql.connection.cursor()
@@ -78,6 +77,17 @@ class UserAccount:
         except Exception as e:
             print(f"Error creating account: {e}")
             return False
+        
+    
+    def get_all_emails(self):
+        cur = mysql.connection.cursor()
+        query = "SELECT email FROM useraccount"
+        cur.execute(query)
+        user_data = cur.fetchall()
+        emails = [row[0] for row in user_data]  # Extract emails from each row
+        mysql.connection.commit()
+        cur.close()
+        return emails
         
     def assignMembership(self, username, membership):
         try:
