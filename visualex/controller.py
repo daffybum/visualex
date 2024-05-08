@@ -14,6 +14,12 @@ class CreateUserAccController:
     def createUserAccount(self, userAcc):
         return self.userAccount.createUserAcc(userAcc)
     
+class GetAllEmailsController:
+    def __init__(self):
+        self.email_list = entity.UserAccount()
+    def getEmails(self):
+        return self.email_list.get_all_emails()
+    
 class ChangePasswordController:
     def __init__(self):
         self.userAccount = entity.UserAccount()

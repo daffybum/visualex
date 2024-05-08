@@ -70,6 +70,10 @@ def logout():
 
 @boundary.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    
+    emailListController = controller.GetAllEmailsController()
+    email_list = emailListController.getEmails()
+    
     if request.method == 'POST':
         email = request.form.get('email')
         username = request.form.get('username')
@@ -82,6 +86,8 @@ def sign_up():
 
         if len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
+        elif email in email_list:
+            flash('Email is already used', category='error')
         elif len(name) < 2:
             flash('Name must be greater than 1 character.', category='error')
         elif password1 != password2:
@@ -426,7 +432,8 @@ def editProfile():
     username = session.get('username')
     selected_user = session.get('selected_user')
     display= controller.DisplayController()
-
+    emailListController = controller.GetAllEmailsController()
+    email_list = emailListController.getEmails()
     
     if username == 'admin':
         user = display.get_user_info2(selected_user)
@@ -439,12 +446,15 @@ def editProfile():
             date_of_birth1 = request.form.get('date_of_birth')
             address1 = request.form.get('address')
             membershipTier1 = request.form.get('membershipTier')
-            editProfileController = controller.EditProfileController()
-            editProfile = editProfileController.edit_profile(selected_user, username1, name1, surname1, email1, date_of_birth1, address1, membershipTier1)
-            if editProfile:
-                flash('Profile updated successfully')
+            if email1 in email_list:
+                flash('Email already used', category='error')
             else:
-                flash('Cannot update profile')
+                editProfileController = controller.EditProfileController()
+                editProfile = editProfileController.edit_profile(selected_user, username1, name1, surname1, email1, date_of_birth1, address1, membershipTier1)
+                if editProfile:
+                    flash('Profile updated successfully')
+                else:
+                    flash('Cannot update profile', category='error')
         return render_template("editProfile.html", username=selected_user,name=name, surname=surname, email=email, address=address, user_name = username, membershipTier = membershipTier, dob=date_of_birth)
     else:
         user = display.get_user_info3(username)
@@ -457,12 +467,15 @@ def editProfile():
             date_of_birth1 = request.form.get('date_of_birth')
             address1 = request.form.get('address')
             membershipTier1 = request.form.get('membershipTier')
-            editProfileController = controller.EditProfileController()
-            editProfile = editProfileController.edit_profile1(username, username1, name1, surname1, email1, date_of_birth1, address1)
-            if editProfile:
-                flash('Profile updated successfully')
+            if email1 in email_list:
+                flash('Email already used', category='error')
             else:
-                flash('Cannot update profile')
+                editProfileController = controller.EditProfileController()
+                editProfile = editProfileController.edit_profile(selected_user, username1, name1, surname1, email1, date_of_birth1, address1, membershipTier1)
+                if editProfile:
+                    flash('Profile updated successfully')
+                else:
+                    flash('Cannot update profile', category='error')
         return render_template("editProfile.html", username=selected_user,name=name, surname=surname, email=email, address=address, user_name = username, dob=date_of_birth)
 
 # Admin clicks on view all Logs
