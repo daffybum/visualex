@@ -40,9 +40,12 @@ class UserAccount:
         data = (username,)
         cur.execute(query, data)
         account = cur.fetchone()
-        check = check_password_hash(account[0], password)
-
-        return check
+        if account:
+        
+            check = check_password_hash(account[0], password)
+            return check
+        else:
+            return False
     
     
     def changePW(self, username, password):
