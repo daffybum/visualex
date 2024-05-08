@@ -66,14 +66,17 @@ class MembershipController:
         return self.view_membership_tier.get_membership_tier_info(username)
     
     def getAllmembership(self):
-        return self.view_membership_tier.getAllmembership()    
+        return self.view_membership_tier.getAllmembership()
+
+    def getUserMembership(self, username):
+        return self.view_membership_tier.get_membership_tier(username)
 
 class AssignMembershipController:
     def __init__(self):
         self.userAccount = entity.UserAccount()
 
     def assign_membership(self, username, membership_tier):
-        return self.userAccount.assign_membership(username, membership_tier)
+        return self.userAccount.assignMembership(username, membership_tier)
 
 class DisplayController:
     def __init__(self):
@@ -83,6 +86,9 @@ class DisplayController:
         return self.userAccount.get_user_info(username)
     def get_user_info2(self, username):
         return self.userAccount.get_user_info2(username)
+    def get_user_info3(self, username):
+        return self.userAccount.get_user_info3(username)
+    
     
 class GetAllUsersController:
     def __init__(self):
@@ -115,10 +121,13 @@ class StoreImagesController:
     
 class TextToAudioController:
     def __init__(self):
-        self.predictionresults = entity.PredictionResults()
+        self.audio = entity.PredictionResults()
 
     def generate_audio_from_text(self, text, output_file):
-        return self.predictionresults.generate_audio_from_text(text, output_file)
+        return self.audio.generate_audio_from_text(text, output_file)
+
+    def generate_story_audio_from_text(self, text, output_file):
+        return self.audio.generate_story_audio_from_text(text, output_file)
 
 class GenerateTextController:
     def __init__(self):
@@ -148,3 +157,30 @@ class AutoSelectObjectsController:
         
     def auto_select_objects(self, image_id):
         return self.objectImages.autoSelectObjects(image_id)
+
+class StoryTellingController:
+    def __init__(self):
+        self.story = entity.ImageData()
+        
+    def story_teller(self, object_list):
+        return self.story.storyTelling(object_list)
+
+class imagesGenerationController:
+    def __init__(self):
+        self.images = entity.ImageData()
+    def imagesGenerator(self, prompt):
+        return self.images.imagesGeneration(prompt)
+    
+class ReplyToFeedbackController():
+    def __init__(self):
+        self.reply = entity.FeedbackForum()
+        
+    def replyToFeedback(self, feedback_id, reply):
+        return self.reply.reply_feedback(feedback_id, reply)
+    
+class ViewRepliesController():
+    def __init__(self):
+        self.reply_list = entity.FeedbackForum()
+        
+    def getReplies(self):
+        return self.reply_list.get_replies()

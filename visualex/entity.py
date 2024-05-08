@@ -3,17 +3,21 @@ from . import mysql
 from werkzeug.security import check_password_hash
 from datetime import datetime
 import pytz
-import pyttsx3
 import base64
 from PIL import Image
 import io
 import numpy as np
+import numpy
 import cv2
 import matplotlib.pyplot as plt
 import time
 from collections import defaultdict
 from transformers import VisionEncoderDecoderModel, ViTFeatureExtractor, AutoTokenizer
 import torch
+from gtts import gTTS
+import os
+import random
+import openai
 
 class UserAccount:
     def __init__(self, username=None, password=None, name=None, surname=None, email=None, date_of_birth=None, address=None, membership_tier="basic"):
@@ -162,6 +166,16 @@ class UserAccount:
         cur.close()
         return user_data
     
+    def get_user_info3(self, username):
+        cur = mysql.connection.cursor()
+        query = "SELECT username, name, surname, email, date_of_birth, address FROM useraccount WHERE username = %s"
+        cur.execute(query, (username,))
+        user_data = cur.fetchone()
+        mysql.connection.commit()
+        cur.close()
+        return user_data
+
+    
     def get_all_users(self):
         try:
             cur = mysql.connection.cursor()
@@ -228,7 +242,13 @@ class UserAccount:
         try:
             cur = mysql.connection.cursor()
             delete_query = "DELETE FROM useraccount WHERE username = %s"
+            delete_query1 = "DELETE FROM feedback WHERE username = %s"
+            delete_query2 = "DELETE FROM transaction WHERE username = %s"
+            delete_query3 = "DELETE FROM history WHERE username = %s"
             cur.execute(delete_query, (username,))
+            cur.execute(delete_query1, (username,))
+            cur.execute(delete_query2, (username,))
+            cur.execute(delete_query3, (username,))
             mysql.connection.commit()
             cur.close()
             return True
@@ -236,7 +256,17 @@ class UserAccount:
             print(f"Error deleting account: {e}")
             return False
 
-
+    def get_membership_tier(self, username):
+        try:
+            cur = mysql.connection.cursor()
+            query = "SELECT membership_tier FROM useraccount WHERE username = %s"
+            cur.execute(query, (username,))
+            membership_tier = cur.fetchone()[0]
+            cur.close()
+            return membership_tier
+        except Exception as e:
+            print(f"No membership tier info for current user: {e}")
+            return None
 
 class FeedbackForum:
     def __init__(self, feedback_id=None, username=None, content=None, feedback_date=None):
@@ -308,6 +338,52 @@ class FeedbackForum:
         else:
             years = days // 365
             return f"{years} years ago"
+        
+    def reply_feedback(self, feedback_id, reply):
+        try:
+            cur = mysql.connection.cursor()
+
+            query = "INSERT INTO feedback_replies (feedback_id, reply_content, reply_date) VALUES (%s, %s, %s)"
+            data = (feedback_id, reply, datetime.now())
+            cur.execute(query, data)
+
+            mysql.connection.commit()
+
+            cur.close()
+            return True
+        except Exception as e:
+            print(f"Error replying to feedback: {e}")
+            return False
+        
+    def get_replies(self):
+        try:
+            cur = mysql.connection.cursor()
+
+            query = "SELECT reply_id, feedback_id, reply_content, reply_date FROM feedback_replies"
+            cur.execute(query)
+            
+            reply_list = []
+            for reply_data in cur.fetchall():
+                reply_id = reply_data[0]
+                feedback_id = reply_data[1]
+                reply_content = reply_data[2]
+                reply_date = reply_data[3]
+                
+                reply = {
+                    'reply_id': reply_id,
+                    'feedback_id': feedback_id,
+                    'reply_content': reply_content,
+                    'reply_date': reply_date
+                }
+                reply_list.append(reply)
+
+            cur.close()
+            return reply_list
+        except Exception as e:
+            print(f"Error getting replies: {e}")
+
+
+
 
 class Transactions:
     def __init__(self, transaction_id=None, username=None, payment_timestamp=None, charges=None):
@@ -663,6 +739,59 @@ class ImageData:
 
 
         return cropped_images
+    
+    def storyTelling(self, object_list):
+        # Set up your OpenAI API key
+        openai.api_key = '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'
+        
+        #debugging
+        #print("Entity: ")
+        #print(object_list)
+        
+        # Dictionary containing prompts based on the length of the object list
+        prompts = {
+            1: "Once upon a time, there was a {}. What adventures did it have?",
+            2: "A {} and a {} went on a journey together. What challenges did they face?",
+            3: "In a magical forest, a {}, a {}, and a {} discovered a hidden treasure. What was it, and what did they do with it?",
+            4: "Four friends - a {}, a {}, a {}, and a {} - decided to start a band. What kind of music did they play, and what was their first big performance like?",
+            5: "Five unlikely companions - a {}, a {}, a {}, a {}, and a {} - found themselves trapped in a mysterious labyrinth. How did they escape?",
+            6: "Six objects - {}, {}, {}, {}, {}, and {} - gained magical powers overnight. How did they use their newfound abilities?",
+        }
+        
+        # Select the appropriate prompt based on the length of the object list
+        prompt = prompts.get(len(object_list))
+        
+        # If prompt is not found, return an error
+        if not prompt:
+            return "Sorry, unsupported number of objects"
+        
+        # Format the prompt with the object list
+        prompt = prompt.format(*object_list)
+        
+        # Use GPT-3.5 to generate the story
+        response = openai.Completion.create(
+            model="gpt-3.5-turbo-instruct",
+            prompt=prompt,
+            temperature=0.5,
+            # the more tokens the more words you'll generate commenting it out for now since we're also charged for the amount of tokens usage for the api
+            # can always uncomment for debugging and modification purposes
+             max_tokens=300
+        )
+        
+        # Get the generated story from the response
+        story = response.choices[0].text.strip()
+        # for debugging
+        #print(prompt)
+        #print(story)
+        # Print and return the story
+        return story
+                                                                               
+    def imagesGeneration(self, prompt):
+        openai.api_key = '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'
+
+        response = openai.Image.create(prompt=prompt, n=3, size="512x512")
+        print(response['data'])
+        return response['data']
 
 class PredictionResults:
     def __init__(self, result_id=None, model_id=None, image_id=None, predicted_label=None, confidence_score=None, timestamp=None):
@@ -673,20 +802,29 @@ class PredictionResults:
         self.confidence_score = confidence_score
         self.timestamp = timestamp
 
-    def generate_audio_from_text(self, text, output_file):
+    def generate_audio_from_text(self, text, output_file="audio.mp3"):
         try:
-            engine = pyttsx3.init()
-            engine.setProperty('rate', 150)  # Speed of speech
-            engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
-            engine.say(text)
-            engine.runAndWait()
+            if os.path.exists(output_file):
+                os.remove(output_file)
+            
+            tts = gTTS(text=text, lang='en')  # Create gTTS object
+            tts.save(output_file)  # Save the synthesized speech to a file
+            return True, None  # Return success status and no error
         except Exception as e:
             print(f"Error generating audio: {e}")
-            return False
+            return False, str(e)
 
-import cv2
-import numpy
-
+    def generate_story_audio_from_text(self, text, output_file="storyaudio.mp3"):
+        try:
+            if os.path.exists(output_file):
+                os.remove(output_file)
+                
+            tts = gTTS(text=text, lang='en')
+            tts.save(output_file)
+            return True, None
+        except Exception as e:
+            print(f"Error generating audio: {e}")
+            return False, str(e)
 class Blur_Detection:
 
     @staticmethod

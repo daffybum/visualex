@@ -61,26 +61,55 @@
             </div>
         {% endfor %}
     </div>
-    <div class="generate-story">
-        <button class="generate-button">Generate Story</button>
+    <form id="generateStoryForm" method="post" action="/generate_story">
+        <input type="hidden" name="order" id="listOrderInput">
+        <div class="generate-story">
+            <button type="submit" class="generate-button" id="generateButton">Generate Story</button>
+        </div>
+    </form>
+    <!-- Button to generate audio -->
+    <form action="/generatestoryaudio" method="POST">
+        <input type="hidden" name="text" value="{{ story }}">
+        <button type="submit" class="btn btn-info">Generate Story Audio</button>
+        <br>
+        <audio controls>
+            <source src="{{ url_for('static', filename='storyaudio.mp3') }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+    </form>
+    <div>
+        <h3>Output</h3>
+        <textarea id="outputTextarea" name="story-ouput" rows="10" cols="50" value="{{story}}"
+            readonly>{{story}}</textarea>
     </div>
-    <textarea class="story-output" id="storyOutput" readonly></textarea>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
-        $( function() {
-            $( "#sortable" ).sortable({
+        $(function() {
+            $("#sortable").sortable({
                 update: function(event, ui) {
-                    var order = [];
-                    $(".object-image").each(function() {
-                        order.push($(this).attr('id'));
-                    });
-                    // Send order to server or save it locally
-                    console.log(order);
+                    updateOrder();
                 }
             });
-            $( "#sortable" ).disableSelection();
+            $("#sortable").disableSelection();
+            
+            updateOrder(); // Call updateOrder immediately
+            
+            // Submit the form when the button is clicked
+            $("#generateButton").click(function() {
+                $("#generateStoryForm").submit();
+            });
+    
+            function updateOrder() {
+                var order = [];
+                $(".object-image").each(function() {
+                    order.push($(this).attr('id'));
+                });
+                $("#listOrderInput").val(order.join(","));
+                console.log(order);
+            }
         });
     </script>
+    
 </body>
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
 from . import mysql
 
 import stripe
@@ -121,7 +121,7 @@ def handle_payment_success():
     membership = "premium"
     payment = makePaymentController.makePayment(username, charges)
     display = getInvoiceController.viewDisplay(payment)
-    assignMembershipController.assignMembership(username, membership)
+    assignMembershipController.assign_membership(username, membership)
     return render_template("paymentSuccess.html", user_name = username, display = display, tier = membership.capitalize())
 
 
@@ -163,7 +163,12 @@ def user_feedback():
     username = session.get('username')
     feedback_controller = controller.ViewFeedbackController()
     feedback_list = feedback_controller.viewFeedback()
-    return render_template("feedbackUserPage.html", feedback_list=feedback_list, user_name = username)
+    
+    replyController = controller.ViewRepliesController()
+    reply_list = replyController.getReplies()
+    print(reply_list)
+    
+    return render_template("feedbackUserPage.html", feedback_list=feedback_list, user_name = username, reply_list=reply_list)
 
 
 @boundary.route('/submitfb', methods=['GET', 'POST'])
@@ -210,6 +215,7 @@ def upload():
  
 @boundary.route('/uploadImage', methods=['POST'])
 def upload_image():
+    username = session.get('username')
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
@@ -227,7 +233,7 @@ def upload_image():
         image = cv2.imread(str(image))
         results = []
 
-        blur_map,score, blurry = entity.Blur_Detection.estimate_blur(image, threshold=100.0)
+        blur_map,score, blurry = entity.Blur_Detection.estimate_blur(image, threshold=250.0)
         results.append({'Laplacian score': score, 'blurry': blurry})
         for item in results:
                 # Construct a formatted string for the dictionary
@@ -242,12 +248,13 @@ def upload_image():
             image_controller = controller.StoreImagesController()
             image_path = os.path.join(UPLOAD_FOLDER, filename)
             image_id = image_controller.store_img(image_path)
+            session['image_id'] = image_id
             session['laplacian_score'] = score # store the laplacian score in the session
             session['filename'] = filename
             flash(formatted_string)
             print('upload_image filename: ' + filename)
             flash('Image successfully uploaded')
-            return render_template('uploadImage.html', filename=filename, image_id=image_id)
+            return render_template('uploadImage.html', filename=filename, image_id=image_id, user_name=username)
     else:
         flash('Allowed image types are - png and jpeg only')
         return redirect(request.url)
@@ -276,10 +283,10 @@ def display_profile():
     username = session.get('username')
     if username:
         display= controller.DisplayController()
-        user = display.get_user_info(username)
+        user = display.get_user_info2(username)
         if user:
-            username,password,name, surname, date_of_birth,email, address,membership_tier = user
-            return render_template("accountdetail.html", username=username,password=password,name=name, surname=surname,date_of_birth=date_of_birth, email=email, address=address, membership_tier=membership_tier,user_name = username)
+            username ,name, surname, email, date_of_birth, address, membershipTier = user
+            return render_template("accountdetail.html", username=username,name=name, surname=surname, email=email, date_of_birth=date_of_birth, address=address, membershipTier = membershipTier, user_name = username)
         else:
             flash('User not found', category='error')
             return redirect(url_for('boundary.login'))
@@ -303,8 +310,8 @@ def viewUserDetails():
     display= controller.DisplayController()
     user = display.get_user_info2(selected_user)
     if user:
-        selected_user,name, surname, email, date_of_birth, address, membershipTier = user
-        return render_template("accountdetail.html", username=selected_user,name=name, surname=surname, email=email, dob=date_of_birth, address=address, user_name = username, membershipTier = membershipTier)
+        selected_user,name, surname, email,date_of_birth, address, membershipTier = user
+        return render_template("accountdetail.html", username=selected_user,name=name, surname=surname, email=email,date_of_birth=date_of_birth, address=address, user_name = username, membershipTier = membershipTier)
 
 
 # If admin clicks search
@@ -325,7 +332,19 @@ def viewSearchedUserDetails():
 @boundary.route('/deleteAccount', methods=['GET', 'POST'])
 def delete_account():
         username = session.get('username')
-        if username:
+        selected_user = session.get('selected_user')
+        if username == "admin":
+            userController = controller.DeleteController()
+            result = userController.delete_profile(selected_user)
+            if result :
+                # Account deleted successfully
+                # You might want to clear the session and provide a confirmation message
+                return redirect(url_for('boundary.login'))
+            else:
+                # Account deletion failed (username not found, database error, etc.)
+                flash('Failed to delete your account. Please try again later.', category='error')
+                return redirect(url_for('boundary.accountDetail'))
+        else:
             userController = controller.DeleteController()
             result = userController.delete_profile(username)
             if result :
@@ -335,20 +354,38 @@ def delete_account():
             else:
                 # Account deletion failed (username not found, database error, etc.)
                 flash('Failed to delete your account. Please try again later.', category='error')
-                return redirect(url_for('boundary.accountDetail'))
         return redirect(url_for('boundary.accounDetail'))
 
 @boundary.route('/generateaudio', methods=['GET', 'POST'])
 def generate_audio():
     if request.method == 'POST':
         text = request.form.get('text')
-        output_file = "static/output_audio.mp3"  # Change this to your desired output file name
+        username = session.get('username')
+        image_id = request.form.get('image_id')
+        prediction_result = session.get('prediction_result')
+        filename = session.get('filename')
+        output_file = 'visualex/static/audio.mp3'  # Output file path for generated audio
         text_to_audio_controller = controller.TextToAudioController()
         success = text_to_audio_controller.generate_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
-    return render_template("uploadImage.html", text=text)
+    return render_template("uploadImage.html", text=text, user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
 
+@boundary.route('/generatestoryaudio', methods=['GET', 'POST'])
+def generate_storyaudio():
+    if request.method == 'POST':
+        text = request.form.get('text')
+        username = session.get('username')
+        image_id = request.form.get('image_id')
+        prediction_result = session.get('prediction_result')
+        filename = session.get('filename')
+        output_file = 'visualex/static/storyaudio.mp3'  # Output file path for generated audio
+        text_to_audio_controller = controller.TextToAudioController()
+        success = text_to_audio_controller.generate_story_audio_from_text(text, output_file)
+        if success:
+            flash('Audio generated successfully!', category='success')  # Flash success message
+    return render_template("generateStory.html", user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
+    
 @boundary.route('/assignmembership', methods=['GET', 'POST'])
 def assign_membership():
     # Retrieve username and membership tier
@@ -378,6 +415,7 @@ def generateText():
     print(filename)
     prediction_controller = controller.GenerateTextController()
     prediction_result = prediction_controller.generate_text(image_id)
+    session['prediction_result'] = prediction_result
     storePredictedResultsController = controller.storePredictedResultsController() # store entry in prediction_results table
     storePredictedResultsController.store_PredictedResults(username, image_id,prediction_result,laplacian_score)
     # Do something with the image_id, such as storing it in a database
@@ -409,7 +447,7 @@ def editProfile():
                 flash('Cannot update profile')
         return render_template("editProfile.html", username=selected_user,name=name, surname=surname, email=email, address=address, user_name = username, membershipTier = membershipTier, dob=date_of_birth)
     else:
-        user = display.get_user_info(username)
+        user = display.get_user_info3(username)
         username,name, surname, email, date_of_birth, address= user
         if request.method == 'POST':
             email1 = request.form.get('email')
@@ -459,10 +497,99 @@ def viewUserLogs():
     history_logs = history_logs_controller.viewHistory(selected_user)
     return render_template('history.html', history_logs=history_logs, user_name=username)
 
+@boundary.route('/cancel-membership', methods=['POST'])
+def cancel_membership():
+    username = session.get('username')
+    assignMembershipController = controller.AssignMembershipController()
+    membership = "basic"
+    assignMembershipController.assign_membership(username, membership)
+    membership_controller = controller.MembershipController()
+    membership_tier = membership_controller.get_membership_tier_info(username)
+    flash('Membership Cancelled Successfully!')
+    return render_template('viewmembershiptier.html', user_name = username, membership_tier = membership_tier)
+
 @boundary.route('/autoSelectImages', methods=['POST'])
 def auto_select_objects():
     username = session.get('username')
-    image_id = request.form.get('image_id')
+    image_id = session.get('image_id')
+    filename = session.get('filename')
+    membershipController = controller.MembershipController()
+    membership = membershipController.getUserMembership(username)
+    
+    # Check if membership is premium
+    if membership != 'premium':
+        message = "Membership not premium. Please subscribe to use this feature"
+        return render_template('uploadImage.html', message=message, user_name=username, image_id=image_id, filename=filename)
+    
     autoSelectController = controller.AutoSelectObjectsController()
-    cropped_images = autoSelectController .auto_select_objects(image_id)
+    cropped_images = autoSelectController.auto_select_objects(image_id)
     return render_template('generateStory.html', cropped_images=cropped_images, user_name=username)
+
+@boundary.route('/generate_story', methods=['POST'])
+def generate_story():
+    order = request.form['order']  # Get the order array sent from the client
+    username = session.get('username')
+    image_id = session.get('image_id')
+    autoSelectController = controller.AutoSelectObjectsController()
+    cropped_images = autoSelectController.auto_select_objects(image_id)
+    # For debugging purposes (can ignore it)
+    print("Boundary: ")
+    print(type(order))
+    print(order)
+    list_order = order.split(",")
+    # For debugging purposes (can ignore it)
+    print(type(list_order))
+    print(list_order)
+    #story_result = "hi it's working!"
+    # Process the order array as needed
+    story_controller = controller.StoryTellingController()
+    story_result = story_controller.story_teller(list_order)
+    session['story_result'] = story_result
+    #print(story_result)
+    return render_template('generateStory.html', user_name=username, story=story_result, cropped_images=cropped_images)
+
+@boundary.route('/imageGeneration')
+def image_gen():
+    username = session.get('username')
+    return render_template('imagesGeneration.html', user_name = username)
+
+@boundary.route('/imagesGeneration', methods = ['POST'])
+def generate_image():
+    images = []
+    prompt = request.form['prompt']
+    username = session.get('username')
+    print("have reach boundary")
+    membershipController = controller.MembershipController()
+    membership = membershipController.getUserMembership(username)
+    
+    # Check if membership is premium
+    if membership != 'premium':
+        message = "Membership not premium. Please subscribe to use this feature"
+        return render_template('imagesGeneration.html', message=message, user_name=username)
+    
+    images_controller = controller.imagesGenerationController()
+    images_result = images_controller.imagesGenerator(prompt)
+    if len(images_result)>0:
+        for img in images_result:
+            images.append(img['url'])
+
+    return render_template("imagesGeneration.html",user_name = username, prompt=prompt, images = images)
+
+@boundary.route('/replyfeedback', methods=['POST'])
+def reply_feedback():
+    # Get data from the form
+    feedback_id = request.form['feedback_id']
+    reply_content = request.form['reply_content']
+    
+    replyFBController = controller.ReplyToFeedbackController()
+    reply = replyFBController.replyToFeedback(feedback_id, reply_content)
+    
+    if reply:
+        flash('Reply sent successfully', 'success')
+    else:
+        flash('Failed to send reply', 'error')
+    
+    username = session.get('username')          
+    feedback_controller = controller.ViewFeedbackController()
+    feedback_list = feedback_controller.viewFeedback()
+    return render_template("feedbackAdminPage.html", feedback_list=feedback_list, user_name=username)

@@ -22,7 +22,7 @@
         </thead>
         <tbody>
             {% if history_logs %}
-            {% for history_log, prediction_info in history_logs %}
+            {% for history_log, prediction_info in history_logs|reverse %}
             <tr>
                 <td>{{ history_log.h_date.strftime('%B %d, %Y') }}</td>
                 <td>{{ prediction_info.image_id }}</td>
@@ -38,5 +38,8 @@
             {% endif %}
         </tbody>
     </table>
+    {% if user_name == "admin" %}
+    <a style="text-align: left;" class="nav-link" href="/viewAllLogs">Back</a>
+    {% endif %}
 </div>
 {% endblock %}
