@@ -434,6 +434,7 @@ def editProfile():
     display= controller.DisplayController()
     emailListController = controller.GetAllEmailsController()
     email_list = emailListController.getEmails()
+    old_email = request.form.get('email')
     
     if username == 'admin':
         user = display.get_user_info2(selected_user)
@@ -445,7 +446,7 @@ def editProfile():
             date_of_birth1 = request.form.get('date_of_birth')
             address1 = request.form.get('address')
             membershipTier1 = request.form.get('membershipTier')
-            if email1 in email_list:
+            if email1 in email_list and email1 != old_email:
                 flash('Email already used', category='error')
             else:
                 editProfileController = controller.EditProfileController()
@@ -465,7 +466,7 @@ def editProfile():
             date_of_birth1 = request.form.get('date_of_birth')
             address1 = request.form.get('address')
             membershipTier1 = request.form.get('membershipTier')
-            if email1 in email_list:
+            if email1 in email_list and email1 != old_email:
                 flash('Email already used', category='error')
             else:
                 editProfileController = controller.EditProfileController()
