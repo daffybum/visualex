@@ -440,7 +440,6 @@ def editProfile():
         selected_user,name, surname, email, date_of_birth, address, membershipTier = user
         if request.method == 'POST':
             email1 = request.form.get('email')
-            username1 = request.form.get('username')
             name1 = request.form.get('name')
             surname1 = request.form.get('surname')
             date_of_birth1 = request.form.get('date_of_birth')
@@ -450,7 +449,7 @@ def editProfile():
                 flash('Email already used', category='error')
             else:
                 editProfileController = controller.EditProfileController()
-                editProfile = editProfileController.edit_profile(selected_user, username1, name1, surname1, email1, date_of_birth1, address1, membershipTier1)
+                editProfile = editProfileController.edit_profile(selected_user, name1, surname1, email1, date_of_birth1, address1, membershipTier1)
                 if editProfile:
                     flash('Profile updated successfully')
                 else:
@@ -458,10 +457,9 @@ def editProfile():
         return render_template("editProfile.html", username=selected_user,name=name, surname=surname, email=email, address=address, user_name = username, membershipTier = membershipTier, dob=date_of_birth)
     else:
         user = display.get_user_info3(username)
-        username,name, surname, email, date_of_birth, address= user
+        username, name, surname, email, date_of_birth, address= user
         if request.method == 'POST':
             email1 = request.form.get('email')
-            username1 = request.form.get('username')
             name1 = request.form.get('name')
             surname1 = request.form.get('surname')
             date_of_birth1 = request.form.get('date_of_birth')
@@ -471,7 +469,7 @@ def editProfile():
                 flash('Email already used', category='error')
             else:
                 editProfileController = controller.EditProfileController()
-                editProfile = editProfileController.edit_profile(selected_user, username1, name1, surname1, email1, date_of_birth1, address1, membershipTier1)
+                editProfile = editProfileController.edit_profile(selected_user, name1, surname1, email1, date_of_birth1, address1, membershipTier1)
                 if editProfile:
                     flash('Profile updated successfully')
                 else:

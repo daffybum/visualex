@@ -145,10 +145,10 @@ class GenerateTextController:
 class EditProfileController:
     def __init__(self):
         self.userAccount = entity.UserAccount()
-    def edit_profile(self, oldUsername, newUsername, name, surname, email, dob, address, membership):
-        return self.userAccount.edit_profile(oldUsername, newUsername, name, surname, email, dob, address, membership)
-    def edit_profile1(self, oldUsername, newUsername, name, surname, email, dob, address):
-        return self.userAccount.edit_profile1(oldUsername, newUsername, name, surname, email, dob, address)
+    def edit_profile(self, oldUsername,  name, surname, email, dob, address, membership):
+        return self.userAccount.edit_profile(oldUsername, name, surname, email, dob, address, membership)
+    def edit_profile1(self, oldUsername, name, surname, email, dob, address):
+        return self.userAccount.edit_profile1(oldUsername, name, surname, email, dob, address)
 
 class storePredictedResultsController:
     def __init__(self):

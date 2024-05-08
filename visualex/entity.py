@@ -223,11 +223,11 @@ class UserAccount:
         except Exception as e:
             print(f"Error searching user: {e}")
 
-    def edit_profile(self, oldUsername, newUsername, name, surname, email, dob, address, membership):
+    def edit_profile(self, oldUsername, name, surname, email, dob, address, membership):
         try:
             cur = mysql.connection.cursor()
-            query = "UPDATE useraccount SET username = %s, name = %s, surname = %s, email = %s, date_of_birth = %s, address = %s ,membership_tier = %s WHERE username = %s"
-            data = (newUsername, name, surname, email, dob, address, membership, oldUsername)
+            query = "UPDATE useraccount SET name = %s, surname = %s, email = %s, date_of_birth = %s, address = %s ,membership_tier = %s WHERE username = %s"
+            data = (name, surname, email, dob, address, membership, oldUsername)
             cur.execute(query, data)
             mysql.connection.commit()
            
@@ -237,11 +237,11 @@ class UserAccount:
             print(f"Error changing profile: {e}")
             return False
         
-    def edit_profile1(self, oldUsername, newUsername, name, surname, email, dob, address):
+    def edit_profile1(self, oldUsername, name, surname, email, dob, address):
         try:
             cur = mysql.connection.cursor()
             query = "UPDATE useraccount SET username = %s, name = %s, surname = %s, email = %s, date_of_birth = %s, address = %s WHERE username = %s"
-            data = (newUsername, name, surname, email, dob, address, oldUsername)
+            data = (name, surname, email, dob, address, oldUsername)
             cur.execute(query, data)
             mysql.connection.commit()
            
