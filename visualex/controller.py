@@ -55,8 +55,8 @@ class MakePaymentController:
 class GetInvoiceController:
     def __init__(self):
         self.display = entity.Transactions()
-    def viewDisplay(self,payment_timestamp):
-        return self.display.get_invoice(payment_timestamp)
+    def viewDisplay(self,transaction_id):
+        return self.display.get_invoice(transaction_id)
     
 class ViewHistoryController:
     def __init__(self):

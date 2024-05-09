@@ -421,28 +421,34 @@ class Transactions:
             cur.execute(query, data)
 
             mysql.connection.commit()
+            
+            transaction_id = cur.lastrowid
 
             cur.close()
             payment_timestamp = str(payment_timestamp)
             parts = payment_timestamp.split(".")
             fisrt_part = parts[0]
-            return fisrt_part
+            
+            
+            return transaction_id
         except Exception as e:
             print(f"Error saving transaction: {e}")
             return False
         
-    def get_invoice(self, payment_timestamp):
+    def get_invoice(self, transaction_id):
         try:
 
             cur = mysql.connection.cursor()
 
-            query = "SELECT * FROM transaction WHERE payment_timestamp = %s"
-            data = (payment_timestamp,)
+            query = "SELECT * FROM transaction WHERE transaction_id = %s"
+            data = (transaction_id,)
             cur.execute(query, data)
 
             display = cur.fetchone()
 
             cur.close()
+            print(display)
+            print(type(display))
             return display
         except Exception as e:
             print(f"Error saving transaction: {e}")
