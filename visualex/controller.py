@@ -55,8 +55,8 @@ class MakePaymentController:
 class GetInvoiceController:
     def __init__(self):
         self.display = entity.Transactions()
-    def viewDisplay(self,payment_timestamp):
-        return self.display.get_invoice(payment_timestamp)
+    def viewDisplay(self,transaction_id):
+        return self.display.get_invoice(transaction_id)
     
 class ViewHistoryController:
     def __init__(self):
@@ -177,16 +177,23 @@ class imagesGenerationController:
     def imagesGenerator(self, prompt):
         return self.images.imagesGeneration(prompt)
     
-class ReplyToFeedbackController():
+class ReplyToFeedbackController:
     def __init__(self):
         self.reply = entity.FeedbackForum()
         
     def replyToFeedback(self, feedback_id, reply):
         return self.reply.reply_feedback(feedback_id, reply)
     
-class ViewRepliesController():
+class ViewRepliesController:
     def __init__(self):
         self.reply_list = entity.FeedbackForum()
         
     def getReplies(self):
         return self.reply_list.get_replies()
+    
+class VisionDescriptionController:
+    def __init__(self):
+        self.vision = entity.ImageData()
+        
+    def vision_description(self, image_id):
+        return self.vision.visionDescription(image_id)

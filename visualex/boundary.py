@@ -382,15 +382,15 @@ def generate_storyaudio():
     if request.method == 'POST':
         text = request.form.get('text')
         username = session.get('username')
-        image_id = request.form.get('image_id')
-        prediction_result = session.get('prediction_result')
+        image_id = session.get('label')
+        storyouput = session.get('story-ouput')
         filename = session.get('filename')
         output_file = 'visualex/static/storyaudio.mp3'  # Output file path for generated audio
         text_to_audio_controller = controller.TextToAudioController()
         success = text_to_audio_controller.generate_story_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
-    return render_template("generateStory.html", user_name=username, image_id=image_id, prediction_result=prediction_result, filename=filename)
+    return render_template("generateStory.html", user_name=username, image_id=image_id, storyouput=storyouput, filename=filename)
     
 @boundary.route('/assignmembership', methods=['GET', 'POST'])
 def assign_membership():
@@ -434,6 +434,7 @@ def editProfile():
     display= controller.DisplayController()
     emailListController = controller.GetAllEmailsController()
     email_list = emailListController.getEmails()
+    old_email = request.form.get('email')
     
     if username == 'admin':
         user = display.get_user_info2(selected_user)
@@ -445,7 +446,7 @@ def editProfile():
             date_of_birth1 = request.form.get('date_of_birth')
             address1 = request.form.get('address')
             membershipTier1 = request.form.get('membershipTier')
-            if email1 in email_list:
+            if email1 in email_list and email1 != old_email:
                 flash('Email already used', category='error')
             else:
                 editProfileController = controller.EditProfileController()
@@ -465,7 +466,7 @@ def editProfile():
             date_of_birth1 = request.form.get('date_of_birth')
             address1 = request.form.get('address')
             membershipTier1 = request.form.get('membershipTier')
-            if email1 in email_list:
+            if email1 in email_list and email1 != old_email:
                 flash('Email already used', category='error')
             else:
                 editProfileController = controller.EditProfileController()
@@ -569,7 +570,6 @@ def generate_image():
     images = []
     prompt = request.form['prompt']
     username = session.get('username')
-    print("have reach boundary")
     membershipController = controller.MembershipController()
     membership = membershipController.getUserMembership(username)
     
@@ -604,3 +604,26 @@ def reply_feedback():
     feedback_controller = controller.ViewFeedbackController()
     feedback_list = feedback_controller.viewFeedback()
     return render_template("feedbackAdminPage.html", feedback_list=feedback_list, user_name=username)
+
+@boundary.route('/visionDescription', methods=['POST'])
+def generate_vision():
+    username = session.get('username')
+    image_id = request.form.get('image_id')
+    laplacian_score = session.get('laplacian_score')
+    filename = session.get('filename')
+    
+    membershipController = controller.MembershipController()
+    membership = membershipController.getUserMembership(username)
+    
+    # Check if membership is premium
+    if membership != 'premium':
+        message = "Membership not premium. Please subscribe to use this feature"
+        return render_template('uploadImage.html', message=message, user_name=username, image_id=image_id, filename=filename)
+    
+    visionController = controller.VisionDescriptionController()
+    visionText = visionController.vision_description(image_id)
+    
+    session['prediction_result'] = visionText
+    storePredictedResultsController = controller.storePredictedResultsController() # store entry in prediction_results table
+    storePredictedResultsController.store_PredictedResults(username, image_id, visionText, laplacian_score)
+    return render_template('uploadImage.html', user_name=username, image_id=image_id, prediction_result=visionText, filename=filename)
