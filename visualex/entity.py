@@ -803,6 +803,45 @@ class ImageData:
         response = openai.Image.create(prompt=prompt, n=3, size="512x512")
         print(response['data'])
         return response['data']
+    
+    def encode_image(self, image_id):
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT image_data FROM image_metadata WHERE image_id = %s", (image_id,))
+        row = cur.fetchone()
+        if row:
+            image_data = row[0]
+            return base64.b64encode(image_data).decode('utf-8')
+        else:
+            return None
+        
+    def visionDescription(self, image_id):
+        openai.api_key = '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'
+        
+        base64_image = self.encode_image(image_id)
+        
+        response = openai.ChatCompletion.create(
+        model="gpt-4-turbo",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "What’s in this image?"},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        },
+                    },
+                ],
+            }
+        ],
+        max_tokens=150,
+        )
+        vision = response.choices[0].message.content
+        print(vision)
+        print(type(vision))
+        return vision
+    
 
 class PredictionResults:
     def __init__(self, result_id=None, model_id=None, image_id=None, predicted_label=None, confidence_score=None, timestamp=None):

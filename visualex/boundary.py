@@ -570,7 +570,6 @@ def generate_image():
     images = []
     prompt = request.form['prompt']
     username = session.get('username')
-    print("have reach boundary")
     membershipController = controller.MembershipController()
     membership = membershipController.getUserMembership(username)
     
@@ -605,3 +604,26 @@ def reply_feedback():
     feedback_controller = controller.ViewFeedbackController()
     feedback_list = feedback_controller.viewFeedback()
     return render_template("feedbackAdminPage.html", feedback_list=feedback_list, user_name=username)
+
+@boundary.route('/visionDescription', methods=['POST'])
+def generate_vision():
+    username = session.get('username')
+    image_id = request.form.get('image_id')
+    laplacian_score = session.get('laplacian_score')
+    filename = session.get('filename')
+    
+    membershipController = controller.MembershipController()
+    membership = membershipController.getUserMembership(username)
+    
+    # Check if membership is premium
+    if membership != 'premium':
+        message = "Membership not premium. Please subscribe to use this feature"
+        return render_template('uploadImage.html', message=message, user_name=username, image_id=image_id, filename=filename)
+    
+    visionController = controller.VisionDescriptionController()
+    visionText = visionController.vision_description(image_id)
+    
+    session['prediction_result'] = visionText
+    storePredictedResultsController = controller.storePredictedResultsController() # store entry in prediction_results table
+    storePredictedResultsController.store_PredictedResults(username, image_id, visionText, laplacian_score)
+    return render_template('uploadImage.html', user_name=username, image_id=image_id, prediction_result=visionText, filename=filename)
