@@ -73,8 +73,9 @@ def sign_up():
     
     emailListController = controller.GetAllEmailsController()
     email_list = emailListController.getEmails()
-    
+    #Form Submission Data
     if request.method == 'POST':
+        #Retrieve user input from form
         email = request.form.get('email')
         username = request.form.get('username')
         name = request.form.get('name')
@@ -84,6 +85,7 @@ def sign_up():
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
 
+        #Validating user input
         if len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
         elif email in email_list:
@@ -96,6 +98,7 @@ def sign_up():
             flash('Password must be at least 7 characters.', category='error')
         else:
             createAccountController = controller.CreateUserAccController()
+            #Hashing securely to not appear as plaintext
             password1 = generate_password_hash(password1, method='pbkdf2')
             userAcc = entity.UserAccount(username, password1, name, surname, email, date_of_birth, address)
             result = createAccountController.createUserAccount(userAcc)
@@ -104,6 +107,7 @@ def sign_up():
             else:
                 flash('Cannot Create Account!', category='error')
 
+    #Render template after form submission, redirection
     return render_template("sign_up.html")
 
 @boundary.route('/about-us')
@@ -279,9 +283,12 @@ def history_logs():
 
 @boundary.route('/viewmembershiptier')
 def view_membership_tier():
+    #Retrieve username from session
     username = session.get('username')
     membership_controller = controller.MembershipController()
+    #Retrieve membership info for specific user
     membership_tier = membership_controller.get_membership_tier_info(username)
+    #Render template with the membership info and username to display
     return render_template('viewmembershiptier.html', membership_tier=membership_tier, user_name=username)
 
 @boundary.route('/accountDetail', methods=['GET', 'POST'])
@@ -364,14 +371,16 @@ def delete_account():
 
 @boundary.route('/generateaudio', methods=['GET', 'POST'])
 def generate_audio():
+    #Retrieve FORM and session data
     if request.method == 'POST':
         text = request.form.get('text')
         username = session.get('username')
         image_id = request.form.get('image_id')
         prediction_result = session.get('prediction_result')
         filename = session.get('filename')
-        output_file = 'visualex/static/audio.mp3'  # Output file path for generated audio
+        output_file = 'visualex/static/audio.mp3'  #File path for text generated audio
         text_to_audio_controller = controller.TextToAudioController()
+        #Generate audio from text and save to file
         success = text_to_audio_controller.generate_audio_from_text(text, output_file)
         if success:
             flash('Audio generated successfully!', category='success')  # Flash success message
@@ -379,15 +388,18 @@ def generate_audio():
 
 @boundary.route('/generatestoryaudio', methods=['GET', 'POST']) 
 def generate_storyaudio(): 
+    #Retrieve FORM and session data
     if request.method == 'POST': 
         text = request.form.get('text') 
         username = session.get('username') 
         image_id = session.get('image_id') 
         story = session.get('story_result') 
+        #Retrieve images and select images
         autoSelectController = controller.AutoSelectObjectsController() 
         cropped_images = autoSelectController.auto_select_objects(image_id) 
-        output_file = 'visualex/static/storyaudio.mp3'  # Output file path for generated audio 
+        output_file = 'visualex/static/storyaudio.mp3'    #File path for story generated audio
         text_to_audio_controller = controller.TextToAudioController() 
+        #Generate audio from story and save to file
         success = text_to_audio_controller.generate_story_audio_from_text(text, output_file) 
         if success: 
             flash('Audio generated successfully!', category='success')  # Flash success message 
@@ -398,11 +410,13 @@ def assign_membership():
     # Retrieve username and membership tier
     membership_controller = controller.MembershipController()
     users = membership_controller.getAllmembership()
-
+    
+    #Retrieve FORM data
     if request.method == 'POST':
         username = request.form['username']
         membership_tier = request.form['membership_tier']
 
+        #Assign membership tier to that user
         assignmembershipController = controller.AssignMembershipController()
         result = assignmembershipController.assign_membership(username, membership_tier)
         print(result)
@@ -512,8 +526,10 @@ def viewUserLogs():
 
 @boundary.route('/cancel-membership', methods=['POST'])
 def cancel_membership():
+    #Retrieve username from session
     username = session.get('username')
     assignMembershipController = controller.AssignMembershipController()
+    #Set membership back to basic 
     membership = "basic"
     assignMembershipController.assign_membership(username, membership)
     membership_controller = controller.MembershipController()
