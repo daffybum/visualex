@@ -64,8 +64,8 @@ class UserAccount:
 
     def createUserAcc(self, userAcc):
         try:
+           #Query database to insert values into table to create new account
            cur = mysql.connection.cursor()
-
            query = "INSERT INTO useraccount (username, password, name, surname, email, date_of_birth, address, membership_tier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)" 
            data = (userAcc.username, userAcc.password, userAcc.name, userAcc.surname, userAcc.email, userAcc.date_of_birth, userAcc.address, "basic")
            cur.execute(query, data)
@@ -91,6 +91,7 @@ class UserAccount:
         
     def assignMembership(self, username, membership):
         try:
+           #Query database to update membership tier into table to update account
             cur = mysql.connection.cursor()
             query = "UPDATE useraccount SET membership_tier = %s WHERE username = %s"
             data = (membership, username)
@@ -124,6 +125,7 @@ class UserAccount:
     
     def getAllmembership(self):
         try:
+           #Query database to retrieve all username and membership tier
             cur = mysql.connection.cursor()
             query = "SELECT username, membership_tier FROM useraccount"
             cur.execute(query)
@@ -134,15 +136,16 @@ class UserAccount:
             print(f"Error retrieving membership info: {e}")
             return None
         
-    
     def get_membership_tier_info(self, username):
         try:
+            #Query database to fetch membership tier from useraccount table for user
             cur = mysql.connection.cursor()
             query = "SELECT membership_tier FROM useraccount WHERE username = %s"
             cur.execute(query, (username,))
             membership_tier = cur.fetchone()[0]
             cur.close()
 
+            #Return membership based on membership tier
             if membership_tier == 'basic':
                 return {'membership_tier': 'basic', 'monthly_fee': 'Free', 'description': [
                     '1. Generate Descriptive Text', 
@@ -151,9 +154,10 @@ class UserAccount:
                 return {'membership_tier': 'Premium', 'monthly_fee': '$20.00', 'description': [
                     '1. Generate Descriptive Text',
                     '2. Text to Speech feature to read text as audio message',
-                    '3. Selective analysis feature to circle image',
-                    '4. Generate descriptive text on the selected part of the image',
-                    '5. Generate a story for the image instead of just descriptive text.']}
+                    '3. Image Generation from prompt text',
+                    '4. Generate Vision to give a GREAT descriptive text',
+                    '5. Generate a story for the image instead of just descriptive text.'
+                    '6. Text to Speech feature to read story as audio message']}
             else:
                 return None
         except Exception as e:
@@ -860,23 +864,25 @@ class PredictionResults:
 
     def generate_audio_from_text(self, text, output_file="audio.mp3"):
         try:
+            #Check if there is exisitng audio file, if have remove
             if os.path.exists(output_file):
                 os.remove(output_file)
-            
-            tts = gTTS(text=text, lang='en')  # Create gTTS object
-            tts.save(output_file)  # Save the synthesized speech to a file
-            return True, None  # Return success status and no error
+            #Use google text to speech convert text to audio 
+            tts = gTTS(text=text, lang='en')
+            tts.save(output_file)    #Save audio to file
+            return True, None
         except Exception as e:
             print(f"Error generating audio: {e}")
             return False, str(e)
 
     def generate_story_audio_from_text(self, text, output_file="storyaudio.mp3"):
         try:
+            #Check if there is exisitng audio file, if have remove
             if os.path.exists(output_file):
                 os.remove(output_file)
-                
+            #Use google text to speech convert text to audio 
             tts = gTTS(text=text, lang='en')
-            tts.save(output_file)
+            tts.save(output_file)    #Save audio to file
             return True, None
         except Exception as e:
             print(f"Error generating audio: {e}")
