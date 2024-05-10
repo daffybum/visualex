@@ -765,26 +765,29 @@ class ImageData:
         # Set up your OpenAI API key
         openai.api_key = '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'
         
-        #debugging
-        #print("Entity: ")
-        #print(object_list)
-        
-        # Dictionary containing prompts based on the length of the object list
-        prompts = {
-            1: "Once upon a time, there was a {}. What adventures did it have?",
-            2: "A {} and a {} went on a journey together. What challenges did they face?",
-            3: "In a magical forest, a {}, a {}, and a {} discovered a hidden treasure. What was it, and what did they do with it?",
-            4: "Four friends - a {}, a {}, a {}, and a {} - decided to start a band. What kind of music did they play, and what was their first big performance like?",
-            5: "Five unlikely companions - a {}, a {}, a {}, a {}, and a {} - found themselves trapped in a mysterious labyrinth. How did they escape?",
-            6: "Six objects - {}, {}, {}, {}, {}, and {} - gained magical powers overnight. How did they use their newfound abilities?",
+        # Dictionary containing the path to the text files based on the length of the object list
+        prompt_files = {
+            1: "visualex/static/story_prompt/prompts_1.txt",
+            2: "visualex/static/story_prompt/prompts_2.txt",
+            3: "visualex/static/story_prompt/prompts_3.txt",
+            4: "visualex/static/story_prompt/prompts_4.txt",
+            5: "visualex/static/story_prompt/prompts_5.txt",
+            6: "visualex/static/story_prompt/prompts_6.txt",
         }
         
-        # Select the appropriate prompt based on the length of the object list
-        prompt = prompts.get(len(object_list))
+        # Get the path to the appropriate text file based on the length of the object list
+        prompt_file = prompt_files.get(len(object_list))
         
-        # If prompt is not found, return an error
-        if not prompt:
+        # If prompt file is not found, return an error
+        if not prompt_file:
             return "Sorry, unsupported number of objects"
+        
+        # Read prompts from the file
+        with open(prompt_file, "r") as file:
+            prompts = file.readlines()
+        
+        # Select a random prompt from the list
+        prompt = random.choice(prompts).strip()
         
         # Format the prompt with the object list
         prompt = prompt.format(*object_list)
@@ -794,16 +797,12 @@ class ImageData:
             model="gpt-3.5-turbo-instruct",
             prompt=prompt,
             temperature=0.5,
-            # the more tokens the more words you'll generate commenting it out for now since we're also charged for the amount of tokens usage for the api
-            # can always uncomment for debugging and modification purposes
-             max_tokens=300
+            max_tokens=500
         )
         
         # Get the generated story from the response
         story = response.choices[0].text.strip()
-        # for debugging
-        #print(prompt)
-        #print(story)
+        
         # Print and return the story
         return story
                                                                                
