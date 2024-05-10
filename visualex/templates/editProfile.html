@@ -85,7 +85,12 @@
             <br>
             <button type="submit" class="btn btn-info btn-lg btn-block">Update</button>
         </form>
+        {% if user_name == "admin" %}
         <a style="text-align: left;" class="nav-link" href="/viewAllUsers">Back</a>
+        {% endif %}
+        {% if user_name != "admin" %}
+        <a style="text-align: left;" class="nav-link" href="/accountDetail">Back</a>
+        {% endif %}
         <br>
         <br>
         <br>
