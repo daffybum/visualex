@@ -49,9 +49,26 @@
             margin: 0 auto; /* Centering the text area */
             display: block;
         }
+        .generate-audio {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 20px; /* Add margin to the bottom */
+        }
+
+        #outputTextarea {
+        width: 80%;
+        height: 250px;
+        margin: auto; /* Center the text area horizontally */
+        display: block; /* Ensure the text area takes up the full width */
+    }
     </style>
 </head>
-<body>
+<body class="content">
     <h1>Detected Objects</h1>
     <div class="object-images" id="sortable">
         {% for image, label in cropped_images %}
@@ -68,20 +85,25 @@
         </div>
     </form>
     <!-- Button to generate story audio -->
+    <div>
+        <div class="generate-story">
+        <h3>Visual StoryTelling</h3>
+    </div>
+        <textarea id="outputTextarea" name="story-ouput" rows="10" cols="50" value="{{story}}"
+            readonly>{{story}}</textarea>
+    </div>
     <form action="/generatestoryaudio" method="POST">
+        <div class="generate-story">
         <input type="hidden" name="text" value="{{ story }}">
-        <button type="submit" class="btn btn-info">Generate Story Audio</button>
-        <br>
+        <button type="submit" class="generate-audio">Generate Story Audio</button>
+        <span>
         <audio controls>
             <source src="{{ url_for('static', filename='storyaudio.mp3') }}" type="audio/mp3">
             Audio playback not supported by browser.
         </audio>
-    </form>
-    <div>
-        <h3>Output</h3>
-        <textarea id="outputTextarea" name="story-ouput" rows="10" cols="50" value="{{story}}"
-            readonly>{{story}}</textarea>
+        </span>
     </div>
+    </form>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
