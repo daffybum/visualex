@@ -20,9 +20,12 @@
 
 <div class="container">
     <body>
+        <!-- Display Membership Tiers Information -->
         <p><strong>Membership Tier:</strong> {{ membership_tier.membership_tier }}</p>
         <p><strong>Monthly Subscription:</strong> {{ membership_tier.monthly_fee }}</p>
         <p><strong>Description:</strong> {{ membership_tier.description }}</p>
+
+        <!-- Display cancel membership button if user is premium tier -->
         {% if membership_tier.membership_tier != "basic" %}
         <form action="/cancel-membership" method="post">
             <input type="submit" value="Cancel Membership">
