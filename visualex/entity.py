@@ -42,7 +42,7 @@ class UserAccount:
         account = cur.fetchone()
         if account:
         
-            check = check_password_hash(account[0], password)
+            check = check_password_hash(account[0], password) # check if password hash matches
             return check
         else:
             return False
@@ -50,6 +50,7 @@ class UserAccount:
     
     def changePW(self, username, password):
         try:
+            # Query database to update user's password
             cur = mysql.connection.cursor()
             query = "UPDATE useraccount SET password = %s WHERE username = %s"
             data = (password, username)
@@ -64,7 +65,7 @@ class UserAccount:
 
     def createUserAcc(self, userAcc):
         try:
-           #Query database to insert values into table to create new account
+           # Query database to insert values into table to create new account
            cur = mysql.connection.cursor()
            query = "INSERT INTO useraccount (username, password, name, surname, email, date_of_birth, address, membership_tier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)" 
            data = (userAcc.username, userAcc.password, userAcc.name, userAcc.surname, userAcc.email, userAcc.date_of_birth, userAcc.address, "basic")
@@ -80,6 +81,7 @@ class UserAccount:
         
     
     def get_all_emails(self):
+        # get all exisiting emails and store them in an array
         cur = mysql.connection.cursor()
         query = "SELECT email FROM useraccount"
         cur.execute(query)
@@ -105,6 +107,7 @@ class UserAccount:
             return False
         
     def checkMembershipExist(self, username):
+        # check if user has membership 
         try:
             cur = mysql.connection.cursor()
 
@@ -164,7 +167,7 @@ class UserAccount:
             print(f"Error Retrieving Membership Tier Info: {e}")
             return None
         
-    def get_user_info(self, username):
+    def get_user_info(self, username): # query database to get all columns of data from useraccount with the specific username
         cur = mysql.connection.cursor()
         query = "SELECT * FROM useraccount WHERE username = %s"
         cur.execute(query, (username,))
@@ -173,7 +176,7 @@ class UserAccount:
         cur.close()
         return user_data
 
-    def get_user_info2(self, username):  # to edit membership_tier for admin
+    def get_user_info2(self, username):  # to edit membership_tier for admin activities
         session['selected_user'] = username # store the username in the session
         cur = mysql.connection.cursor()
         query = "SELECT username, name, surname, email, date_of_birth, address, membership_tier FROM useraccount WHERE username = %s"
@@ -183,7 +186,7 @@ class UserAccount:
         cur.close()
         return user_data
     
-    def get_user_info3(self, username):
+    def get_user_info3(self, username): # query database to get account details of the specified username
         cur = mysql.connection.cursor()
         query = "SELECT username, name, surname, email, date_of_birth, address FROM useraccount WHERE username = %s"
         cur.execute(query, (username,))
@@ -193,7 +196,7 @@ class UserAccount:
         return user_data
 
     
-    def get_all_users(self):
+    def get_all_users(self): # query database to get all existing username 
         try:
             cur = mysql.connection.cursor()
 
@@ -209,7 +212,7 @@ class UserAccount:
         except Exception as e:
             print(f"Error getting username list: {e}")
 
-    def search_user(self, username):
+    def search_user(self, username): # query database to get check if specified username exist
         try:
             cur = mysql.connection.cursor()
 
@@ -228,6 +231,7 @@ class UserAccount:
             print(f"Error searching user: {e}")
 
     def edit_profile(self, oldUsername, name, surname, email, dob, address, membership):
+        # query database to update useraccount with new details entered in the form
         try:
             cur = mysql.connection.cursor()
             query = "UPDATE useraccount SET name = %s, surname = %s, email = %s, date_of_birth = %s, address = %s ,membership_tier = %s WHERE username = %s"
@@ -242,6 +246,7 @@ class UserAccount:
             return False
         
     def edit_profile1(self, oldUsername, name, surname, email, dob, address):
+        # query database to update useraccount with new details entered in the form excluding membership
         try:
             cur = mysql.connection.cursor()
             query = "UPDATE useraccount SET username = %s, name = %s, surname = %s, email = %s, date_of_birth = %s, address = %s WHERE username = %s"
@@ -886,27 +891,30 @@ class PredictionResults:
         except Exception as e:
             print(f"Error generating audio: {e}")
             return False, str(e)
-class Blur_Detection:
+        
 
+class Blur_Detection:
+    # Define a class for blur detection
+    
     @staticmethod
     def fix_image_size(image: numpy.array, expected_pixels: float = 2E6):
+        # Static method to resize the image to a target number of pixels
         ratio = numpy.sqrt(expected_pixels / (image.shape[0] * image.shape[1]))
+        # Calculate the ratio to resize the image to the target number of pixels
         return cv2.resize(image, (0, 0), fx=ratio, fy=ratio)
+        # Resize the image using the calculated ratio and return it
 
     @staticmethod
-    def estimate_blur(image: numpy.array, threshold: int = 100):
+    def estimate_blur(image: numpy.array, threshold: int = 100):  # calculate the laplacian score 
+        # Static method to estimate blur in an image
         if image.ndim == 3:
+            # Check if the image has multiple color channels (i.e., it is a color image)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            # Convert the image to grayscale
 
         blur_map = cv2.Laplacian(image, cv2.CV_64F)
+        # Calculate the Laplacian (second derivative) of the image to highlight regions of rapid intensity change (edges)
         score = numpy.var(blur_map)
+        # Compute the variance of the Laplacian, which is a measure of the image's sharpness
         return blur_map, score, bool(score < threshold)
-
-    @staticmethod
-    def pretty_blur_map(blur_map: numpy.array, sigma: int = 5, min_abs: float = 0.5):
-        abs_image = numpy.abs(blur_map).astype(numpy.float32)
-        abs_image[abs_image < min_abs] = min_abs
-
-        abs_image = numpy.log(abs_image)
-        cv2.blur(abs_image, (sigma, sigma))
-        return cv2.medianBlur(abs_image, sigma)
+        # Return the blur map, the variance score, and a boolean indicating if the score is below the threshold (indicating blurriness)

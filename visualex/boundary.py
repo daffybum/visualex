@@ -22,28 +22,27 @@ YOUR_DOMAIN = "http://localhost:5000"
 
 # AUTHENTICATION
 @boundary.route('/', methods=['GET', 'POST'])
-def login():                                     
-    if request.method == 'POST':
+def login():                                      # define login activities
+    if request.method == 'POST':                  # get user credentials from login form
         username = request.form.get('username')
         password = request.form.get('password')
         
         loginController = controller.LoginController()
-        user = loginController.userLogin(username, password)
-        #print(user.username)
+        user = loginController.userLogin(username, password) # pass data to controller
         if (user):
-            return redirect(url_for('boundary.home'))
+            return redirect(url_for('boundary.home'))  # If credentials are authorized redirect user to home page
         else:
             flash('Wrong password or username', category='error')
 
     return render_template("login.html", boolean=True)
 
-@boundary.route('/home', methods=['GET', 'POST'])
+@boundary.route('/home', methods=['GET', 'POST'])  # boundary for home page
 def home():
     username = session.get('username')
     return render_template("homepage.html", user_name = username)
 
-@boundary.route('/forgotpw', methods=['GET', 'POST'])
-def forgotpw():
+@boundary.route('/forgotpw', methods=['GET', 'POST'])   # Page to change password
+def forgotpw(): 
     if request.method == 'POST':
         username = request.form.get('username')
         password1 = request.form.get('newPassword')
@@ -85,7 +84,7 @@ def sign_up():
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
 
-        #Validating user input
+        # Validating user input
         if len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
         elif email in email_list:
@@ -98,7 +97,7 @@ def sign_up():
             flash('Password must be at least 7 characters.', category='error')
         else:
             createAccountController = controller.CreateUserAccController()
-            #Hashing securely to not appear as plaintext
+            # Hashing securely to not appear as plaintext
             password1 = generate_password_hash(password1, method='pbkdf2')
             userAcc = entity.UserAccount(username, password1, name, surname, email, date_of_birth, address)
             result = createAccountController.createUserAccount(userAcc)
@@ -147,11 +146,11 @@ def create_checkout_session():
 
         if 'premium-membership' in request.form:
 
-            if(check_membership == 1):
+            if(check_membership == 1):     # check if user already has premium membership
                  flash('Already has premium membership!', category='error')
                  return render_template("membersubscription.html", user_name = username)
             else:
-                checkout_session = stripe.checkout.Session.create(
+                checkout_session = stripe.checkout.Session.create(   # create session with stripe API
                     line_items = [
                         {
                             'price' : 'price_1Ou8paRqVdY5zwen2Qyhu1Ii',
@@ -238,21 +237,21 @@ def upload_image():
         file.save(os.path.join(UPLOAD_FOLDER, filename))
         static_folder = os.path.abspath('visualex')
         relative_filepath = r"static/uploads/" + filename
-        image_path = os.path.join(static_folder, relative_filepath)
+        image_path = os.path.join(static_folder, relative_filepath)  
         image = image_path
         image = cv2.imread(str(image))
         results = []
 
-        blur_map,score, blurry = entity.Blur_Detection.estimate_blur(image, threshold=250.0)
-        results.append({'Laplacian score': score, 'blurry': blurry})
+        blur_map,score, blurry = entity.Blur_Detection.estimate_blur(image, threshold=250.0)  # check if image is blurry 
+        results.append({'Laplacian score': score, 'blurry': blurry})  # store the laplacian scores in results
         for item in results:
                 # Construct a formatted string for the dictionary
                 formatted_string = ', '.join(f"{key}: {value}" for key, value in item.items())
         if blurry:
             flash(formatted_string, category='error')
-            flash('Image is blurry please upload another Image',category='error')
+            flash('Image is blurry please upload another Image',category='error') 
             image_path = os.path.join(UPLOAD_FOLDER, filename)
-            os.remove(image_path)
+            os.remove(image_path)   # if image is blurry remove image from folder
             return redirect(request.url)
         else:
             image_controller = controller.StoreImagesController()
@@ -291,7 +290,7 @@ def view_membership_tier():
     #Render template with the membership info and username to display
     return render_template('viewmembershiptier.html', membership_tier=membership_tier, user_name=username)
 
-@boundary.route('/accountDetail', methods=['GET', 'POST'])
+@boundary.route('/accountDetail', methods=['GET', 'POST'])  # display account details
 def display_profile():
     username = session.get('username')
     if username:
@@ -351,10 +350,9 @@ def delete_account():
             result = userController.delete_profile(selected_user)
             if result :
                 # Account deleted successfully
-                # You might want to clear the session and provide a confirmation message
                 return redirect(url_for('boundary.login'))
             else:
-                # Account deletion failed (username not found, database error, etc.)
+                # Account deletion failed 
                 flash('Failed to delete your account. Please try again later.', category='error')
                 return redirect(url_for('boundary.accountDetail'))
         else:
@@ -362,10 +360,9 @@ def delete_account():
             result = userController.delete_profile(username)
             if result :
                 # Account deleted successfully
-                # You might want to clear the session and provide a confirmation message
                 return redirect(url_for('boundary.login'))
             else:
-                # Account deletion failed (username not found, database error, etc.)
+                # Account deletion failed 
                 flash('Failed to delete your account. Please try again later.', category='error')
         return redirect(url_for('boundary.accounDetail'))
 
