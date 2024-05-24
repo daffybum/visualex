@@ -372,7 +372,7 @@ def generate_audio():
     if request.method == 'POST':
         text = request.form.get('text')
         username = session.get('username')
-        image_id = request.form.get('image_id')
+        image_id = session.get('image_id')
         prediction_result = session.get('prediction_result')
         filename = session.get('filename')
         output_file = 'visualex/static/audio.mp3'  #File path for text generated audio
