@@ -19,6 +19,10 @@ import os
 import random
 import openai
 
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
 class UserAccount:
     def __init__(self, username=None, password=None, name=None, surname=None, email=None, date_of_birth=None, address=None, membership_tier="basic"):
         self.username = username
@@ -768,7 +772,7 @@ class ImageData:
     
     def storyTelling(self, object_list):
         # Set up your OpenAI API key
-        openai.api_key = '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'
+        openai.api_key = os.getenv("openai.api_key")
         
         # Dictionary containing the path to the text files based on the length of the object list
         prompt_files = {
@@ -812,7 +816,7 @@ class ImageData:
         return story
                                                                                
     def imagesGeneration(self, prompt):
-        openai.api_key = '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'
+        openai.api_key = os.getenv("openai.api_key")
 
         response = openai.Image.create(prompt=prompt, n=3, size="512x512")
         print(response['data'])
@@ -829,7 +833,7 @@ class ImageData:
             return None
         
     def visionDescription(self, image_id):
-        openai.api_key = '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'
+        openai.api_key = os.getenv("openai.api_key")
         
         base64_image = self.encode_image(image_id)
         

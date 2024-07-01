@@ -14,9 +14,14 @@ from werkzeug.utils import secure_filename
 
 import cv2
 
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+
 boundary = Blueprint('boundary', __name__)  # Blueprints means it has roots inside a bunch of URLs defined
 
-stripe.api_key = "sk_test_51Ou5FZRqVdY5zwenlu9FnQVHaDupGLqxqjC6J6eyBXR09ZccqROeV85QcLOCWb8wFtQYMT4P3FlaIGOOmxJHHFCa00K7pXYYUU"
+stripe.api_key = os.getenv("stripe.api_key")
 
 YOUR_DOMAIN = "http://localhost:5000"
 
